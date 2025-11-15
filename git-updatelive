@@ -1,0 +1,1 @@
+git add . && git commit -m "Update" && git push && ssh root@72.61.171.226 "cd /var/www/merzaai && ./deploy.sh"

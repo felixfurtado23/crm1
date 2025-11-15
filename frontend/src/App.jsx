@@ -28,7 +28,7 @@ function App() {
       case 'Dashboard':
         return <Dashboard />;
       case 'Accounting':
-        return <div>Accounting Content Coming Soon</div>;
+        return <Invoicing/>;
       case 'Reports':
         return <Reports />;
       case 'Invoicing':
