@@ -31,8 +31,7 @@ function App() {
         return <Invoicing/>;
       case 'Reports':
         return <Reports />;
-      case 'Invoicing':
-        return <Invoicing />;
+
       default:
         return <Customers />;
     }

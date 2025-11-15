@@ -5,7 +5,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
     { icon: 'fas fa-chart-pie', label: 'Dashboard', tab: 'Dashboard' },
     { icon: 'fas fa-users', label: 'Leads', tab: 'Leads' },
     { icon: 'fas fa-user-check', label: 'Customers', tab: 'Customers' },
-    { icon: 'fas fa-file-invoice-dollar', label: 'Accounting', tab: 'Invoicing' },
+    { icon: 'fas fa-file-invoice-dollar', label: 'Accounting', tab: 'Accounting' },
     { icon: 'fas fa-chart-bar', label: 'Reports', tab: 'Reports' },
   ];
 
