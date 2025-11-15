@@ -5,7 +5,7 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # JSON directory - update for VPS
-JSON_DIR = '/var/www/merzaai/json_data'  # Changed from local path
+JSON_DIR = '/var/www/merzaai/merzaai/json'   # Changed from local path
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-o-m2$=a*!6&6j@dmfx7$(3xp5ixoasa^s%#(35$q%kl124u=rr'
