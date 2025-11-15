@@ -1,0 +1,324 @@
+{
+  "invoices": [
+    {
+      "id": 1,
+      "number": "INV-2023-008",
+      "customer": "CloudScale Technologies - David Chen",
+      "customer_id": 1,
+      "date": "2023-06-10",
+      "dueDate": "2023-07-10",
+      "status": "paid",
+      "items": [
+        {
+          "description": "Cloud Migration Services",
+          "quantity": 50,
+          "price": 125,
+          "amount": 6250
+        }
+      ],
+      "subtotal": 6250,
+      "vat": 312.5,
+      "total": 6562.5
+    },
+    {
+      "id": 2,
+      "number": "INV-2023-021",
+      "customer": "CloudScale Technologies - David Chen",
+      "customer_id": 1,
+      "date": "2023-07-08",
+      "dueDate": "2023-08-08",
+      "status": "paid",
+      "items": [
+        {
+          "description": "Infrastructure Optimization",
+          "quantity": 60,
+          "price": 125,
+          "amount": 7500
+        }
+      ],
+      "subtotal": 7500,
+      "vat": 375,
+      "total": 7875
+    },
+    {
+      "id": 3,
+      "number": "INV-2023-036",
+      "customer": "CloudScale Technologies - David Chen",
+      "customer_id": 1,
+      "date": "2023-08-12",
+      "dueDate": "2023-09-12",
+      "status": "paid",
+      "items": [
+        {
+          "description": "Ongoing Support & Maintenance",
+          "quantity": 40,
+          "price": 125,
+          "amount": 5000
+        }
+      ],
+      "subtotal": 5000,
+      "vat": 250,
+      "total": 5250
+    },
+    {
+      "id": 4,
+      "number": "INV-2023-003",
+      "customer": "MediCare Solutions - Lisa Rodriguez",
+      "customer_id": 2,
+      "date": "2023-04-25",
+      "dueDate": "2023-05-25",
+      "status": "paid",
+      "items": [
+        {
+          "description": "Medical Billing Software License",
+          "quantity": 3,
+          "price": 1800,
+          "amount": 5400
+        }
+      ],
+      "subtotal": 5400,
+      "vat": 270,
+      "total": 5670
+    },
+    {
+      "id": 5,
+      "number": "INV-2023-030",
+      "customer": "MediCare Solutions - Lisa Rodriguez",
+      "customer_id": 2,
+      "date": "2023-06-30",
+      "dueDate": "2023-07-30",
+      "status": "paid",
+      "items": [
+        {
+          "description": "Multi-location Support Package",
+          "quantity": 1,
+          "price": 7200,
+          "amount": 7200
+        }
+      ],
+      "subtotal": 7200,
+      "vat": 360,
+      "total": 7560
+    },
+    {
+      "id": 6,
+      "number": "INV-2023-055",
+      "customer": "MediCare Solutions - Lisa Rodriguez",
+      "customer_id": 2,
+      "date": "2023-08-31",
+      "dueDate": "2023-09-30",
+      "status": "pending",
+      "items": [
+        {
+          "description": "Monthly Subscription Fee",
+          "quantity": 1,
+          "price": 7200,
+          "amount": 7200
+        }
+      ],
+      "subtotal": 7200,
+      "vat": 360,
+      "total": 7560
+    },
+    {
+      "id": 7,
+      "number": "INV-2023-038",
+      "customer": "EduTech Innovations - James Wilson",
+      "customer_id": 3,
+      "date": "2023-07-30",
+      "dueDate": "2023-08-30",
+      "status": "paid",
+      "items": [
+        {
+          "description": "LMS Development Phase 1",
+          "quantity": 1,
+          "price": 7800,
+          "amount": 7800
+        }
+      ],
+      "subtotal": 7800,
+      "vat": 390,
+      "total": 8190
+    },
+    {
+      "id": 8,
+      "number": "INV-2023-049",
+      "customer": "EduTech Innovations - James Wilson",
+      "customer_id": 3,
+      "date": "2023-08-25",
+      "dueDate": "2023-09-25",
+      "status": "pending",
+      "items": [
+        {
+          "description": "LMS Development Phase 2",
+          "quantity": 1,
+          "price": 7800,
+          "amount": 7800
+        }
+      ],
+      "subtotal": 7800,
+      "vat": 390,
+      "total": 8190
+    },
+    {
+      "id": 9,
+      "number": "INV-2023-002",
+      "customer": "RetailPlus Chain - Maria Garcia",
+      "customer_id": 4,
+      "date": "2023-03-15",
+      "dueDate": "2023-04-15",
+      "status": "paid",
+      "items": [
+        {
+          "description": "POS System Setup - 10 Locations",
+          "quantity": 1,
+          "price": 6025,
+          "amount": 6025
+        }
+      ],
+      "subtotal": 6025,
+      "vat": 301.25,
+      "total": 6326.25
+    },
+    {
+      "id": 10,
+      "number": "INV-2023-026",
+      "customer": "RetailPlus Chain - Maria Garcia",
+      "customer_id": 4,
+      "date": "2023-05-20",
+      "dueDate": "2023-06-20",
+      "status": "paid",
+      "items": [
+        {
+          "description": "Monthly Maintenance & Support",
+          "quantity": 1,
+          "price": 6025,
+          "amount": 6025
+        }
+      ],
+      "subtotal": 6025,
+      "vat": 301.25,
+      "total": 6326.25
+    },
+    {
+      "id": 11,
+      "number": "INV-2023-060",
+      "customer": "RetailPlus Chain - Maria Garcia",
+      "customer_id": 4,
+      "date": "2023-09-30",
+      "dueDate": "2023-10-30",
+      "status": "pending",
+      "items": [
+        {
+          "description": "Monthly Maintenance & Support",
+          "quantity": 1,
+          "price": 6025,
+          "amount": 6025
+        }
+      ],
+      "subtotal": 6025,
+      "vat": 301.25,
+      "total": 6326.25
+    },
+    {
+      "id": 12,
+      "number": "INV-2023-012",
+      "customer": "SecureNet Systems - Thomas Anderson",
+      "customer_id": 5,
+      "date": "2023-06-05",
+      "dueDate": "2023-07-05",
+      "status": "paid",
+      "items": [
+        {
+          "description": "Cybersecurity Assessment",
+          "quantity": 1,
+          "price": 7225,
+          "amount": 7225
+        }
+      ],
+      "subtotal": 7225,
+      "vat": 361.25,
+      "total": 7586.25
+    },
+    {
+      "id": 13,
+      "number": "INV-2023-025",
+      "customer": "SecureNet Systems - Thomas Anderson",
+      "customer_id": 5,
+      "date": "2023-07-07",
+      "dueDate": "2023-08-07",
+      "status": "paid",
+      "items": [
+        {
+          "description": "Quarterly Security Audit",
+          "quantity": 1,
+          "price": 7225,
+          "amount": 7225
+        }
+      ],
+      "subtotal": 7225,
+      "vat": 361.25,
+      "total": 7586.25
+    },
+    {
+      "id": 14,
+      "number": "INV-2023-058",
+      "customer": "SecureNet Systems - Thomas Anderson",
+      "customer_id": 5,
+      "date": "2023-09-10",
+      "dueDate": "2023-10-10",
+      "status": "paid",
+      "items": [
+        {
+          "description": "Quarterly Security Audit",
+          "quantity": 1,
+          "price": 7225,
+          "amount": 7225
+        }
+      ],
+      "subtotal": 7225,
+      "vat": 361.25,
+      "total": 7586.25
+    },
+    {
+      "id": 15,
+      "number": "INV-0015",
+      "customer": "Global Tech Inc. - John Smith",
+      "customer_id": 6,
+      "date": "2025-11-10",
+      "dueDate": "2025-12-10",
+      "status": "paid",
+      "items": [
+        {
+          "description": "felix",
+          "quantity": 1,
+          "price": "100",
+          "amount": 100
+        }
+      ],
+      "subtotal": 100,
+      "vat": 5,
+      "total": 105
+    },
+    {
+      "id": 16,
+      "number": "INV-0016",
+      "customer": "SecureNet Systems - Thomas Anderson",
+      "customer_id": 5,
+      "date": "2025-11-10",
+      "dueDate": "2025-12-10",
+      "status": "draft",
+      "items": [
+        {
+          "description": "fekx",
+          "quantity": 1,
+          "price": "989",
+          "amount": 989
+        }
+      ],
+      "subtotal": 989,
+      "vat": 49.45,
+      "total": 1038.45
+    }
+  ]
+}

@@ -1,0 +1,1342 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CRM & Accounting Dashboard - Customers</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <meta name="csrf-token" content="{{ csrf_token }}">
+      <style>
+      :root {
+        --bg: #ecebe6;
+        --card: #ffffff;
+        --panel: #f7f7f5;
+        --text: #1f221f;
+        --muted: #8b8f8c;
+        --green-1: #7da98a;
+        --green-2: #3d7a56;
+        --muted-green: #a9c9b7;
+        --red: #e06262;
+        --blue: #4a6bdf;
+        --shadow: 0 10px 30px rgba(20, 30, 20, 0.06);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+
+      body {
+        background-color: var(--bg);
+        color: var(--text);
+        line-height: 1.4;
+        letter-spacing: 0.3px;
+        padding: 24px;
+        min-height: 100vh;
+      }
+
+      /* Utility Classes */
+      .flex-center {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .text-muted {
+        color: var(--muted);
+      }
+
+      .btn {
+        background-color: var(--green-2);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .btn:hover {
+        background-color: var(--green-1);
+        transform: translateY(-2px);
+      }
+
+      .btn-secondary {
+        background-color: var(--blue);
+      }
+
+      .btn-secondary:hover {
+        background-color: #3a56c5;
+      }
+
+      .btn-outline {
+        background-color: transparent;
+        border: 1px solid var(--muted);
+        color: var(--text);
+      }
+
+      .btn-outline:hover {
+        background-color: #f5f5f5;
+      }
+
+      /* Dashboard Layout */
+      .dashboard {
+        display: flex;
+        max-width: 1400px;
+        margin: 0 auto;
+        gap: 24px;
+        min-height: calc(100vh - 48px);
+      }
+
+      /* Sidebar - Fixed within 100vh */
+      .sidebar {
+        width: 74px;
+        background-color: var(--panel);
+        border-radius: 20px;
+        padding: 32px 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        height: calc(100vh - 48px);
+        position: sticky;
+        top: 24px;
+      }
+
+      .sidebar-icons {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        align-items: center;
+        width: 100%;
+      }
+
+      .sidebar-icon-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .sidebar-icon {
+        width: 42px;
+        height: 42px;
+        background-color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: var(--shadow);
+        cursor: pointer;
+        color: var(--muted);
+        font-size: 18px;
+        text-decoration: none;
+        transition: all 0.2s ease;
+      }
+
+      .sidebar-icon i {
+        display: block;
+        line-height: 1;
+      }
+
+      .sidebar-icon:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .sidebar-icon.active {
+        background-color: var(--green-2);
+        color: white;
+      }
+
+      .sidebar-icon.active:hover {
+        background-color: var(--green-1);
+      }
+
+      .sidebar-label {
+        color: var(--text);
+        font-size: 10px;
+        text-align: center;
+        margin-top: 4px;
+        font-weight: 500;
+      }
+
+      .user-avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background-color: var(--muted-green);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+      }
+
+      /* Main Content */
+      .main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+
+      /* Topbar */
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 0;
+      }
+
+      .greeting h1 {
+        font-size: 36px;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+
+      .greeting p {
+        font-size: 16px;
+        font-weight: 400;
+        color: var(--muted);
+      }
+
+      .topbar-actions {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .search-bar {
+        display: flex;
+        align-items: center;
+        background-color: white;
+        border-radius: 12px;
+        padding: 10px 16px;
+        box-shadow: var(--shadow);
+      }
+
+      .search-bar input {
+        border: none;
+        outline: none;
+        margin-left: 8px;
+        width: 180px;
+      }
+
+      .action-icons {
+        display: flex;
+        gap: 12px;
+      }
+
+      .action-icon {
+        width: 40px;
+        height: 40px;
+        background-color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: var(--shadow);
+        cursor: pointer;
+        position: relative;
+        transition: all 0.2s;
+      }
+
+      .action-icon:hover {
+        transform: translateY(-2px);
+      }
+
+      .notification-badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        width: 18px;
+        height: 18px;
+        background-color: var(--red);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 10px;
+        font-weight: 600;
+      }
+
+      /* Module Tabs */
+      .module-tabs {
+        display: flex;
+        gap: 16px;
+        border-bottom: 1px solid #e0e0e0;
+        padding-bottom: 16px;
+      }
+
+      .module-tab {
+        padding: 10px 24px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.2s;
+      }
+
+      .module-tab.active {
+        background-color: var(--green-2);
+        color: white;
+      }
+
+      .module-tab:hover:not(.active) {
+        background-color: var(--muted-green);
+      }
+
+      /* Page Header */
+      .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+
+      .page-title {
+        font-size: 24px;
+        font-weight: 600;
+      }
+
+      /* Data Tables - Improved Design */
+      .data-table-container {
+        background-color: var(--card);
+        border-radius: 14px;
+        box-shadow: var(--shadow);
+        padding: 24px;
+        overflow: hidden;
+      }
+
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 16px;
+      }
+
+      .data-table th,
+      .data-table td {
+        padding: 16px;
+        text-align: left;
+        border-bottom: 1px solid #f0f0f0;
+      }
+
+      .data-table th {
+        font-weight: 600;
+        color: var(--muted);
+        font-size: 14px;
+        background-color: #f9f9f9;
+        position: sticky;
+        top: 0;
+      }
+
+      .data-table tr:hover {
+        background-color: #f9f9f9;
+      }
+
+      .data-table td {
+        padding: 18px 16px;
+      }
+
+      .customer-name {
+        font-weight: 600;
+        color: var(--text);
+      }
+
+      .company-name {
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .contact-info {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .contact-email {
+        color: var(--blue);
+        font-size: 14px;
+      }
+
+      .contact-phone {
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .invoice-summary {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .invoice-count {
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      .invoice-amount {
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .action-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .action-row {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+      }
+
+      .action-btn {
+        padding: 6px 10px;
+        border-radius: 6px;
+        font-size: 12px;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        min-width: 32px;
+        justify-content: center;
+      }
+
+      .action-btn:hover {
+        transform: translateY(-1px);
+      }
+
+      .action-btn.view {
+        background-color: var(--blue);
+        color: white;
+      }
+
+      .action-btn.edit {
+        background-color: var(--green-2);
+        color: white;
+      }
+
+      .action-btn.delete {
+        background-color: var(--red);
+        color: white;
+      }
+
+      .action-btn.invoice {
+        background-color: var(--blue);
+        color: white;
+      }
+      /* Modal Overlay */
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .modal-overlay.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      /* Modal Content */
+      .modal-content {
+        background-color: white;
+        border-radius: 16px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        width: 90%;
+        max-width: 700px;
+        max-height: 90vh;
+        overflow-y: auto;
+        transform: translateY(20px);
+        transition: transform 0.3s ease;
+      }
+
+      .modal-overlay.active .modal-content {
+        transform: translateY(0);
+      }
+
+      .modal-header {
+        padding: 24px 24px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .modal-title {
+        font-size: 20px;
+        font-weight: 600;
+      }
+
+      .modal-close {
+        background: none;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+        color: var(--muted);
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+      }
+
+      .modal-close:hover {
+        background-color: #f5f5f5;
+        color: var(--text);
+      }
+
+      .modal-body {
+        padding: 24px;
+      }
+
+      /* Client Detail View */
+      .client-detail {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+      }
+
+      .client-info-section {
+        margin-bottom: 24px;
+      }
+
+      .client-info-section h3 {
+        font-size: 16px;
+        margin-bottom: 12px;
+        color: var(--muted);
+        font-weight: 600;
+      }
+
+      .client-detail-item {
+        display: flex;
+        margin-bottom: 12px;
+      }
+
+      .client-detail-label {
+        width: 120px;
+        font-weight: 500;
+        color: var(--muted);
+      }
+
+      .client-detail-value {
+        flex: 1;
+      }
+
+      .client-invoices {
+        grid-column: 1 / -1;
+      }
+
+      .invoice-list {
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        padding: 16px;
+        max-height: 300px;
+        overflow-y: auto;
+      }
+
+      .invoice-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      .invoice-item:last-child {
+        border-bottom: none;
+      }
+
+      .invoice-number {
+        font-weight: 500;
+      }
+
+      .invoice-date {
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .invoice-amount {
+        font-weight: 600;
+      }
+
+      .invoice-status {
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 500;
+      }
+
+      .invoice-paid {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+      }
+
+      .invoice-pending {
+        background-color: #fff3e0;
+        color: #f57c00;
+      }
+
+      .invoice-overdue {
+        background-color: #ffebee;
+        color: #d32f2f;
+      }
+
+      /* Forms */
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: var(--text);
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: all 0.2s;
+      }
+
+      .form-control:focus {
+        outline: none;
+        border-color: var(--green-2);
+        box-shadow: 0 0 0 3px rgba(61, 122, 86, 0.1);
+      }
+
+      .form-row {
+        display: flex;
+        gap: 16px;
+      }
+
+      .form-row .form-group {
+        flex: 1;
+      }
+
+      .form-footer {
+        padding: 16px 24px 24px;
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        border-top: 1px solid #f0f0f0;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 900px) {
+        .dashboard {
+          flex-direction: column;
+        }
+
+        .sidebar {
+          width: 100%;
+          flex-direction: row;
+          padding: 16px;
+          height: auto;
+          position: relative;
+          top: 0;
+        }
+
+        .sidebar-icons {
+          flex-direction: row;
+          justify-content: space-around;
+          width: 100%;
+        }
+
+        .greeting h1 {
+          font-size: 28px;
+        }
+
+        .topbar {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 16px;
+        }
+
+        .topbar-actions {
+          width: 100%;
+          justify-content: space-between;
+        }
+
+        .form-row {
+          flex-direction: column;
+          gap: 0;
+        }
+
+        .client-detail {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .data-table-container {
+          overflow-x: auto;
+        }
+
+        .data-table {
+          min-width: 900px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dashboard">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-icons">
+          <div class="sidebar-icon-container">
+            <a href="dashboard.html" class="sidebar-icon">
+              <i class="fas fa-chart-pie"></i>
+            </a>
+            <div class="sidebar-label">Dashboard</div>
+          </div>
+          <div class="sidebar-icon-container">
+            <a href="leads.html" class="sidebar-icon">
+              <i class="fas fa-users"></i>
+            </a>
+            <div class="sidebar-label">Leads</div>
+          </div>
+          <div class="sidebar-icon-container">
+            <a href="customers.html" class="sidebar-icon active">
+              <i class="fas fa-user-check"></i>
+            </a>
+            <div class="sidebar-label">Customers</div>
+          </div>
+          <div class="sidebar-icon-container">
+            <a href="invoicing.html" class="sidebar-icon">
+              <i class="fas fa-file-invoice-dollar"></i>
+            </a>
+            <div class="sidebar-label">Accounting</div>
+          </div>
+          <div class="sidebar-icon-container">
+            <a href="payments.html" class="sidebar-icon">
+              <i class="fas fa-money-bill-wave"></i>
+            </a>
+            <div class="sidebar-label">Payments</div>
+          </div>
+          <div class="sidebar-icon-container">
+            <a href="settings.html" class="sidebar-icon">
+              <i class="fas fa-cog"></i>
+            </a>
+            <div class="sidebar-label">Settings</div>
+          </div>
+        </div>
+        <div class="user-avatar">
+          <i class="fas fa-user"></i>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Topbar -->
+        <header class="topbar">
+          <div class="greeting">
+            <h1>CRM & Accounting Dashboard</h1>
+            <p>Manage your customers and financial records</p>
+          </div>
+          <div class="topbar-actions">
+            <div class="search-bar">
+              <i class="fas fa-search"></i>
+              <input type="text" placeholder="Search customers..." />
+            </div>
+            <div class="action-icons">
+              <div class="action-icon">
+                <i class="far fa-bell"></i>
+                <div class="notification-badge">3</div>
+              </div>
+              <div class="action-icon">
+                <i class="far fa-envelope"></i>
+                <div class="notification-badge">7</div>
+              </div>
+              <div class="action-icon">
+                <i class="fas fa-th-large"></i>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- Module Tabs -->
+        <div class="module-tabs">
+                <div class="module-tab">Dashboard</div>
+                <div class="module-tab">CRM</div>
+                <div class="module-tab">Accounting</div>
+                <div class="module-tab active">Payments</div>
+                <div class="module-tab">Reports</div>
+            </div>
+
+        <!-- Page Header -->
+        <div class="page-header">
+          <div class="page-title">Customer Management</div>
+          <button class="btn" id="addCustomerBtn">
+            <i class="fas fa-plus"></i> Add New Customer
+          </button>
+        </div>
+
+        <!-- Customers Table -->
+        <div class="data-table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Customer Name</th>
+                <th>Company</th>
+                <th>Contact Info</th>
+                <th>Address</th>
+                <th>Invoices</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for customer in customers %}
+              <tr 
+                data-id="{{ customer.id }}"
+                data-title="{{ customer.title }}"
+                data-address="{{ customer.address }}"
+                data-invoices='{{ customer.invoices_json|safe }}'
+              >
+                <td>
+                  <div class="customer-name">{{ customer.name }}</div>
+                  <div class="company-name">{{ customer.company }}</div>
+                </td>
+                <td>{{ customer.company }}</td>
+                <td class="contact-info">
+                  <div class="contact-email">{{ customer.email }}</div>
+                  <div class="contact-phone">{{ customer.phone }}</div>
+                </td>
+                <td>{{ customer.address|striptags }}</td>
+                <td class="invoice-summary">
+                  <div class="invoice-count">{{ customer.invoices|length }} Invoices</div>
+                  <div class="invoice-amount">Total: ${{ customer.total_amount|default:"0" }}</div>
+                </td>
+                <td>
+                  <div class="action-buttons">
+                    <div class="action-row">
+                      <button class="action-btn view" data-id="{{ customer.id }}">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                      <button class="action-btn edit">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                    </div>
+                    <div class="action-row">
+                      <button class="action-btn invoice">
+                        <i class="fas fa-file-invoice"></i>
+                      </button>
+                      <button class="action-btn delete">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+
+            <script>
+              
+            </script>
+          </table>
+        </div>
+      </main>
+    </div>
+
+    <!-- View Customer Modal -->
+    <div class="modal-overlay" id="viewCustomerModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">Customer Details</h2>
+          <button class="modal-close" id="closeViewModal">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="client-detail">
+            <div class="client-info-section">
+              <h3>Personal Information</h3>
+              <div class="client-detail-item">
+                <div class="client-detail-label">Name</div>
+                <div class="client-detail-value" id="viewCustomerName">-</div>
+              </div>
+              <div class="client-detail-item">
+                <div class="client-detail-label">Company</div>
+                <div class="client-detail-value" id="viewCompanyName">-</div>
+              </div>
+              <div class="client-detail-item">
+                <div class="client-detail-label">Title</div>
+                <div class="client-detail-value" id="viewTitle">-</div>
+              </div>
+            </div>
+
+            <div class="client-info-section">
+              <h3>Contact Information</h3>
+              <div class="client-detail-item">
+                <div class="client-detail-label">Email</div>
+                <div class="client-detail-value" id="viewEmail">-</div>
+              </div>
+              <div class="client-detail-item">
+                <div class="client-detail-label">Phone</div>
+                <div class="client-detail-value" id="viewPhone">-</div>
+              </div>
+              <div class="client-detail-item">
+                <div class="client-detail-label">Address</div>
+                <div class="client-detail-value" id="viewAddress">-</div>
+              </div>
+            </div>
+
+            <div class="client-info-section">
+              <h3>Invoice Summary</h3>
+              <div class="client-detail-item">
+                <div class="client-detail-label">Total Invoices</div>
+                <div class="client-detail-value" id="viewTotalInvoices">0</div>
+              </div>
+              <div class="client-detail-item">
+                <div class="client-detail-label">Pending</div>
+                <div class="client-detail-value" id="viewOutstandingAmount">$0</div>
+              </div>
+              <div class="client-detail-item">
+                <div class="client-detail-label">Paid</div>
+                <div class="client-detail-value" id="viewPaidAmount">$0</div>
+              </div>
+              <div class="client-detail-item">
+                <div class="client-detail-label">Overdue</div>
+                <div class="client-detail-value" id="viewOverdueAmount">$0</div>
+              </div>
+            </div>
+
+            <div class="client-info-section client-invoices">
+              <h3>Linked Invoices</h3>
+              <div class="invoice-list" id="viewInvoiceList">
+                <!-- Invoices will be populated here -->
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="form-footer">
+          <button class="btn btn-outline" id="closeViewBtn">Close</button>
+          <button class="btn" id="editFromViewBtn">Edit Customer</button>
+          <button class="btn btn-secondary" id="createInvoiceBtn">
+            <i class="fas fa-file-invoice"></i> Create Invoice
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Customer Modal -->
+    <div class="modal-overlay" id="addCustomerModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">Add New Customer</h2>
+          <button class="modal-close" id="closeModal">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="addCustomerForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="customerName">Customer Name *</label>
+                <input type="text" id="customerName" class="form-control" required />
+              </div>
+              <div class="form-group">
+                <label for="companyName">Company Name *</label>
+                <input type="text" id="companyName" class="form-control" required />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="title">Title</label>
+                <input type="text" id="title" class="form-control" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" class="form-control" />
+              </div>
+              <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" class="form-control" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="address">Address</label>
+              <textarea id="address" class="form-control" rows="3"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="form-footer">
+          <button class="btn btn-outline" id="cancelBtn">Cancel</button>
+          <button class="btn" id="saveCustomerBtn">Save Customer</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Customer Modal -->
+    <div class="modal-overlay" id="editCustomerModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">Edit Customer</h2>
+          <button class="modal-close" id="closeEditModal">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="editCustomerForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="editCustomerName">Customer Name *</label>
+                <input type="text" id="editCustomerName" class="form-control" required />
+              </div>
+              <div class="form-group">
+                <label for="editCompanyName">Company Name *</label>
+                <input type="text" id="editCompanyName" class="form-control" required />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="editTitle">Title</label>
+                <input type="text" id="editTitle" class="form-control" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="editEmail">Email Address</label>
+                <input type="email" id="editEmail" class="form-control" />
+              </div>
+              <div class="form-group">
+                <label for="editPhone">Phone Number</label>
+                <input type="tel" id="editPhone" class="form-control" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="editAddress">Address</label>
+              <textarea id="editAddress" class="form-control" rows="3"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="form-footer">
+          <button class="btn btn-outline" id="cancelEditBtn">Cancel</button>
+          <button class="btn" id="updateCustomerBtn">Update Customer</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Modal functionality
+      const addCustomerBtn = document.getElementById("addCustomerBtn");
+      const addCustomerModal = document.getElementById("addCustomerModal");
+      const closeModal = document.getElementById("closeModal");
+      const cancelBtn = document.getElementById("cancelBtn");
+      const saveCustomerBtn = document.getElementById("saveCustomerBtn");
+
+      const viewCustomerModal = document.getElementById("viewCustomerModal");
+      const closeViewModal = document.getElementById("closeViewModal");
+      const closeViewBtn = document.getElementById("closeViewBtn");
+      const editFromViewBtn = document.getElementById("editFromViewBtn");
+
+      const editCustomerModal = document.getElementById("editCustomerModal");
+      const closeEditModal = document.getElementById("closeEditModal");
+      const cancelEditBtn = document.getElementById("cancelEditBtn");
+      const updateCustomerBtn = document.getElementById("updateCustomerBtn");
+
+      let currentCustomerId = null;
+
+      // Open add customer modal
+      addCustomerBtn.addEventListener("click", () => {
+        addCustomerModal.classList.add("active");
+      });
+
+      // Close add customer modal
+      function closeAddModalFunc() {
+        addCustomerModal.classList.remove("active");
+        document.getElementById("addCustomerForm").reset();
+      }
+
+      closeModal.addEventListener("click", closeAddModalFunc);
+      cancelBtn.addEventListener("click", closeAddModalFunc);
+
+      // Save customer - POST to Django
+      saveCustomerBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        const customerName = document.getElementById("customerName").value;
+        const companyName = document.getElementById("companyName").value;
+
+        if (!customerName || !companyName) {
+          alert("Please fill in all required fields");
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append('name', customerName);
+        formData.append('company', companyName);
+        formData.append('title', document.getElementById("title").value || '');
+        formData.append('email', document.getElementById("email").value || '');
+        formData.append('phone', document.getElementById("phone").value || '');
+        formData.append('address', document.getElementById("address").value || '');
+
+        const csrftoken = document.querySelector('[name=csrf-token]').content;
+        
+        fetch('/add_customer/', {
+          method: 'POST',
+          body: formData,
+          headers: { 'X-CSRFToken': csrftoken }
+        })
+        .then(response => response.json())
+        .then(data => {
+          if(data.status === 'success') {
+            alert("Customer added successfully!");
+            closeAddModalFunc();
+            location.reload();
+          } else {
+            alert("Error: " + data.message);
+          }
+        })
+        .catch(error => {
+          alert("Error adding customer");
+          console.error(error);
+        });
+      });
+
+      // View Customer Modal
+      function openViewModal(customerData) {
+        currentCustomerId = customerData.id;
+
+        document.getElementById("viewCustomerName").textContent = customerData.name || "";
+        document.getElementById("viewCompanyName").textContent = customerData.company || "";
+        document.getElementById("viewTitle").textContent = customerData.title || "";
+        document.getElementById("viewEmail").textContent = customerData.email || "";
+        document.getElementById("viewPhone").textContent = customerData.phone || "";
+        document.getElementById("viewAddress").innerHTML = customerData.address || "";
+
+        // Calculate invoice stats
+        const invoices = customerData.invoices || [];
+        const totalInvoices = invoices.length;
+        const outstandingAmount = invoices.filter(inv => 
+    inv.status === 'pending' || 
+    inv.status === 'unpaid' || 
+    inv.status === 'sent'
+).reduce((sum, inv) => sum + (parseFloat(inv.amount) || 0), 0);
+        const paidAmount = invoices.filter(inv => inv.status === 'paid').reduce((sum, inv) => sum + inv.amount, 0);
+        const overdueAmount = invoices.filter(inv => inv.status === 'overdue').reduce((sum, inv) => sum + inv.amount, 0);
+
+        document.getElementById("viewTotalInvoices").textContent = totalInvoices;
+        document.getElementById("viewOutstandingAmount").textContent = `$${outstandingAmount.toLocaleString()}`;
+        document.getElementById("viewPaidAmount").textContent = `$${paidAmount.toLocaleString()}`;
+        document.getElementById("viewOverdueAmount").textContent = `$${overdueAmount.toLocaleString()}`;
+
+        // Populate invoices
+        const invoiceList = document.getElementById("viewInvoiceList");
+        invoiceList.innerHTML = "";
+        invoices.forEach((invoice) => {
+          const invoiceItem = document.createElement("div");
+          invoiceItem.className = "invoice-item";
+          invoiceItem.innerHTML = `
+            <div>
+              <div class="invoice-number">${invoice.number || 'N/A'}</div>
+              <div class="invoice-date">Issued: ${invoice.date || 'N/A'}</div>
+            </div>
+            <div style="display: flex; align-items: center;">
+              <div class="invoice-amount">$${(invoice.amount || 0).toLocaleString()}</div>
+              <span class="invoice-status status-${invoice.status || 'pending'}">
+                ${(invoice.status || 'pending').charAt(0).toUpperCase() + (invoice.status || 'pending').slice(1)}
+              </span>
+            </div>
+          `;
+          invoiceList.appendChild(invoiceItem);
+        });
+
+        viewCustomerModal.classList.add("active");
+      }
+
+      function closeViewModalFunc() {
+        viewCustomerModal.classList.remove("active");
+      }
+
+      closeViewModal.addEventListener("click", closeViewModalFunc);
+      closeViewBtn.addEventListener("click", closeViewModalFunc);
+
+      // Edit customer from view modal
+      editFromViewBtn.addEventListener("click", () => {
+        closeViewModalFunc();
+        const customerData = {
+          name: document.getElementById("viewCustomerName").textContent,
+          company: document.getElementById("viewCompanyName").textContent,
+          title: document.getElementById("viewTitle").textContent,
+          email: document.getElementById("viewEmail").textContent,
+          phone: document.getElementById("viewPhone").textContent,
+          address: document.getElementById("viewAddress").innerHTML,
+        };
+        openEditModal(customerData);
+      });
+
+      // Edit customer functionality
+      function openEditModal(customerData) {
+        document.getElementById("editCustomerName").value = customerData.name || "";
+        document.getElementById("editCompanyName").value = customerData.company || "";
+        document.getElementById("editTitle").value = customerData.title || "";
+        document.getElementById("editEmail").value = customerData.email || "";
+        document.getElementById("editPhone").value = customerData.phone || "";
+        document.getElementById("editAddress").value = customerData.address || "";
+        editCustomerModal.classList.add("active");
+      }
+
+      function closeEditModalFunc() {
+        editCustomerModal.classList.remove("active");
+        document.getElementById("editCustomerForm").reset();
+      }
+
+      closeEditModal.addEventListener("click", closeEditModalFunc);
+      cancelEditBtn.addEventListener("click", closeEditModalFunc);
+
+      // Update customer - POST to Django
+      updateCustomerBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        const customerName = document.getElementById("editCustomerName").value;
+        const companyName = document.getElementById("editCompanyName").value;
+
+        if (!customerName || !companyName) {
+          alert("Please fill in all required fields");
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append('name', customerName);
+        formData.append('company', companyName);
+        formData.append('title', document.getElementById("editTitle").value);
+        formData.append('email', document.getElementById("editEmail").value);
+        formData.append('phone', document.getElementById("editPhone").value);
+        formData.append('address', document.getElementById("editAddress").value);
+
+        const csrftoken = document.querySelector('[name=csrf-token]').content;
+        
+        fetch(`/update_customer/${currentCustomerId}/`, {
+          method: 'POST',
+          body: formData,
+          headers: { 'X-CSRFToken': csrftoken }
+        })
+        .then(response => response.json())
+        .then(data => {
+          if(data.status === 'success') {
+            alert("Customer updated successfully!");
+            closeEditModalFunc();
+            location.reload();
+          } else {
+            alert("Error: " + data.message);
+          }
+        })
+        .catch(error => {
+          alert("Error updating customer");
+          console.error(error);
+        });
+      });
+
+      // Delete customer functionality
+      document.querySelectorAll(".action-btn.delete").forEach((btn) => {
+        btn.addEventListener("click", function () {
+          if (confirm("Are you sure you want to delete this customer?")) {
+            const row = this.closest("tr");
+            const viewBtn = row.querySelector('.action-btn.view');
+            const customerId = viewBtn.getAttribute('data-id');
+
+            const csrftoken = document.querySelector('[name=csrf-token]').content;
+            
+            fetch(`/delete_customer/${customerId}/`, {
+              method: 'POST',
+              headers: { 'X-CSRFToken': csrftoken }
+            })
+            .then(response => response.json())
+            .then(data => {
+              if(data.status === 'success') {
+                alert("Customer deleted successfully!");
+                location.reload();
+              } else {
+                alert("Error: " + data.message);
+              }
+            })
+            .catch(error => {
+              alert("Error deleting customer");
+              console.error(error);
+            });
+          }
+        });
+      });
+
+      // View button functionality
+      document.querySelectorAll(".action-btn.view").forEach((btn) => {
+        btn.addEventListener("click", function () {
+          const row = this.closest("tr");
+          const customerData = {
+            id: this.getAttribute("data-id"),
+            name: row.querySelector(".customer-name").textContent,
+            company: row.querySelector(".company-name").textContent,
+            email: row.querySelector(".contact-email").textContent,
+            phone: row.querySelector(".contact-phone").textContent,
+            address: row.getAttribute("data-address"),
+            title: row.getAttribute("data-title"),
+            invoices: JSON.parse(row.getAttribute("data-invoices") || "[]")
+          };
+          openViewModal(customerData);
+        });
+      });
+
+      // Edit button functionality
+      document.querySelectorAll(".action-btn.edit").forEach((btn) => {
+        btn.addEventListener("click", function () {
+          const row = this.closest("tr");
+          const customerData = {
+            name: row.querySelector(".customer-name").textContent,
+            company: row.querySelector(".company-name").textContent,
+            email: row.querySelector(".contact-email").textContent,
+            phone: row.querySelector(".contact-phone").textContent,
+            address: row.getAttribute("data-address"),
+            title: row.getAttribute("data-title")
+          };
+          const viewBtn = row.querySelector('.action-btn.view');
+          currentCustomerId = viewBtn.getAttribute('data-id');
+          openEditModal(customerData);
+        });
+      });
+
+      // Modal close on outside click
+      [addCustomerModal, viewCustomerModal, editCustomerModal].forEach(modal => {
+        modal.addEventListener("click", (e) => {
+          if (e.target === modal) {
+            if (modal === addCustomerModal) closeAddModalFunc();
+            if (modal === viewCustomerModal) closeViewModalFunc();
+            if (modal === editCustomerModal) closeEditModalFunc();
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "leads": [
+    {
+      "id": 1,
+      "name": "John Smith",
+      "company": "Global Tech Inc.",
+      "email": "john.smith@globaltech.com",
+      "phone": "(555) 123-4567",
+      "source": "Website",
+      "status": "new"
+    },
+    {
+      "id": 2, 
+      "name": "Sarah Johnson",
+      "company": "Prime Solutions",
+      "email": "sarah.j@primesolutions.com",
+      "phone": "(555) 987-6543",
+      "source": "Referral",
+      "status": "contacted"
+    }
+  ]
+}

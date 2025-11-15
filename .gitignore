@@ -1,0 +1,9 @@
+# In your local project folder
+cd "C:\Users\lookb\Desktop\merzaai test"
+echo "node_modules/
+__pycache__/
+*.sqlite3
+.env
+.vscode/
+.DS_Store
+Thumbs.db" > .gitignore

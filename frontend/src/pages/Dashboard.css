@@ -1,0 +1,232 @@
+/* Dashboard Specific Styles */
+
+/* Cards Layout */
+.cards-row {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+
+/* Card Sizes */
+.four-col-card {
+  width: calc(25% - 18px);
+}
+
+.three-col-card {
+  width: calc(33.33% - 16px);
+  display: flex;
+  flex-direction: column;
+  min-height: 400px;
+}
+
+/* Card Base */
+.card {
+  background-color: var(--card);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* KPI Cards */
+.kpi-card .value {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.kpi-card .label {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.kpi-card .trend {
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  gap: 4px;
+}
+
+.trend.up {
+  color: var(--green-2);
+}
+
+.trend.down {
+  color: var(--red);
+}
+
+.kpi-card .chart {
+  height: 40px;
+  margin-top: 16px;
+  background-color: var(--panel);
+  border-radius: 8px;
+}
+
+/* Activity Card */
+.activity-card {
+  background: linear-gradient(90deg, var(--green-1), var(--green-2));
+  color: white;
+}
+
+.activity-card .label {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.activity-card .trend {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Balance Values */
+.balance-values {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.balance-value {
+  display: flex;
+  flex-direction: column;
+}
+
+.balance-value .label {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.balance-value .amount {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.balance-chart {
+  height: 60px;
+  background-color: var(--panel);
+  border-radius: 8px;
+  margin-top: 16px;
+}
+
+/* Table Containers */
+.recent-leads-container,
+.unpaid-invoices-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.recent-leads-container .data-table,
+.unpaid-invoices-container .data-table {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.recent-leads-container .data-table thead,
+.unpaid-invoices-container .data-table thead {
+  flex-shrink: 0;
+}
+
+.recent-leads-container .data-table tbody,
+.unpaid-invoices-container .data-table tbody {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 250px;
+}
+
+/* Quick Actions */
+.quick-actions-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  min-height: 0;
+}
+
+.quick-actions-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+  justify-content: flex-start;
+  padding-top: 8px;
+}
+
+.quick-actions-buttons .btn {
+  width: 100%;
+  text-align: left;
+  justify-content: flex-start;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.quick-actions-buttons .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Empty State */
+.empty-state {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-size: 14px;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+/* Scrollbars */
+.recent-leads-container .data-table tbody::-webkit-scrollbar,
+.unpaid-invoices-container .data-table tbody::-webkit-scrollbar {
+  width: 6px;
+}
+
+.recent-leads-container .data-table tbody::-webkit-scrollbar-track,
+.unpaid-invoices-container .data-table tbody::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.recent-leads-container .data-table tbody::-webkit-scrollbar-thumb,
+.unpaid-invoices-container .data-table tbody::-webkit-scrollbar-thumb {
+  background: var(--muted-green);
+  border-radius: 3px;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .four-col-card {
+    width: calc(50% - 12px);
+  }
+  .three-col-card {
+    width: calc(50% - 12px);
+  }
+}
+
+@media (max-width: 768px) {
+  .cards-row {
+    flex-direction: column;
+  }
+  .four-col-card,
+  .three-col-card {
+    width: 100%;
+  }
+}

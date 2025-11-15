@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meerzai - Unified CRM & Accounting Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #375b6d;
+            --primary-light: #4a636e;
+            --primary-dark: #0f1823;
+            --text: #1f221f;
+            --text-light: #6b7280;
+            --background: #f6f4e8;
+            --background-alt: #ebeae1;
+            --border: #e5e7eb;
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.1);
+            --gradient: #375b6d;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Header & Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: #f6f4e8 ;
+            backdrop-filter: blur(10px);
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            height: 80px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 500;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav-links a:after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover:after {
+            width: 100%;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+            box-shadow: 0 4px 12px rgba(61, 122, 86, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(61, 122, 86, 0.4);
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            padding: 0 5%;
+            background: #f6f4e8 ;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            padding-top: 80px; /* Added to prevent navbar overlap */
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(61, 122, 86, 0.1) 0%, rgba(61, 122, 86, 0) 70%);
+            border-radius: 50%;
+        }
+
+        .hero-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            width: 100%;
+        }
+
+        .hero-text h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-text p {
+            font-size: 1.25rem;
+            color: var(--text-light);
+            margin-bottom: 2.5rem;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .hero-image {
+            position: relative;
+        }
+
+        /* 3D Dashboard */
+        .dashboard-container {
+            perspective: 1000px;
+            transform-style: preserve-3d;
+        }
+
+        .dashboard-preview {
+            background: #f6f4e8;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+            transform: perspective(1000px) rotateY(-5deg) rotateX(5deg);
+            transform-style: preserve-3d;
+            animation: float3d 6s ease-in-out infinite;
+        }
+
+        @keyframes float3d {
+            0%, 100% { 
+                transform: perspective(1000px) rotateY(-5deg) rotateX(5deg) translateY(0); 
+            }
+            50% { 
+                transform: perspective(1000px) rotateY(-5deg) rotateX(5deg) translateY(-10px); 
+            }
+        }
+
+        .dashboard-preview:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--gradient);
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+            transform: translateZ(30px);
+        }
+
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--background-alt);
+            padding: 1rem;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.5s ease-out forwards;
+            opacity: 0;
+            position: relative;
+            overflow: hidden;
+            cursor: default;
+            z-index: 1;
+            transform: translateZ(20px);
+            /* Hover effects removed */
+        }
+
+        .stat-card:nth-child(1) { animation-delay: 0.2s; }
+        .stat-card:nth-child(2) { animation-delay: 0.4s; }
+        .stat-card:nth-child(3) { animation-delay: 0.6s; }
+        .stat-card:nth-child(4) { animation-delay: 0.8s; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px) translateZ(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) translateZ(20px);
+            }
+        }
+
+        /* Hover effects removed from stat cards */
+        .stat-card:hover {
+            transform: translateY(0) scale(1) translateZ(20px) !important;
+            box-shadow: none !important;
+            z-index: 1 !important;
+        }
+
+        .stat-card:hover::before {
+            opacity: 0 !important;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover .stat-value {
+            transform: scale(1) !important;
+            color: var(--primary) !important;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-light);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover .stat-label {
+            color: var(--text-light) !important;
+            font-weight: normal !important;
+        }
+
+        /* Improved Bar Graph */
+        .dashboard-graph {
+            height: 180px;
+            background: var(--background-alt);
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            padding: 1rem;
+            transform: translateZ(15px);
+        }
+
+        .graph-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .graph-container {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            height: calc(100% - 30px);
+            width: 100%;
+        }
+
+        .bar-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
+            width: 18%;
+        }
+
+        .bar {
+            width: 70%;
+            background: linear-gradient(to top, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: 4px 4px 0 0;
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+            min-height: 10px;
+            transform: translateZ(10px);
+            pointer-events: auto; /* Ensure hover works with 3D */
+        }
+
+        .bar:hover {
+            transform: scaleY(1.05) translateZ(15px);
+            filter: brightness(1.1);
+            box-shadow: 0 0 12px rgba(45, 90, 65, 0.3);
+        }
+
+        .bar-label {
+            margin-top: 8px;
+            font-size: 0.7rem;
+            color: var(--text-light);
+            text-align: center;
+        }
+
+        .bar-value {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--primary);
+            background: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .bar:hover .bar-value {
+            opacity: 1;
+        }
+
+        .graph-lines {
+            position: absolute;
+            top: 30px;
+            left: 0;
+            width: 100%;
+            height: calc(100% - 30px);
+            pointer-events: none;
+        }
+
+        .graph-line {
+            position: absolute;
+            width: 100%;
+            height: 1px;
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .graph-line:nth-child(1) { top: 25%; }
+        .graph-line:nth-child(2) { top: 50%; }
+        .graph-line:nth-child(3) { top: 75%; }
+
+        .y-axis-label {
+            position: absolute;
+            left: 5px;
+            font-size: 0.7rem;
+            color: var(--text-light);
+        }
+
+        .y-axis-label:nth-child(1) { top: 25%; }
+        .y-axis-label:nth-child(2) { top: 50%; }
+        .y-axis-label:nth-child(3) { top: 75%; }
+        .y-axis-label:nth-child(4) { top: 95%; }
+
+        .dashboard-activity {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transform: translateZ(20px);
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+
+        .activity-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--primary);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1000;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .dashboard-preview {
+                max-width: 500px;
+                margin: 0 auto;
+                transform: none; /* Remove 3D on smaller screens */
+                animation: float 6s ease-in-out infinite;
+            }
+            
+            .stat-card,
+            .dashboard-header,
+            .dashboard-graph,
+            .dashboard-activity,
+            .bar {
+                transform: none; /* Remove 3D transforms on smaller screens */
+            }
+            
+            .stat-card:hover {
+                transform: translateY(0) scale(1); /* Simplified hover without 3D */
+            }
+            
+            .bar:hover {
+                transform: scaleY(1.05); /* Simplified hover without 3D */
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero-text h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-buttons {
+                justify-content: center;
+            }
+        }
+
+        /* Mobile Menu */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text);
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .nav-links.active {
+                display: flex;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: white;
+                padding: 2rem;
+                box-shadow: var(--shadow-lg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="logo">
+            <!-- <div class="logo-icon">
+                <i class="fas fa-chart-network"></i>
+                 M
+            </div> -->
+
+            <style>
+
+                .logoimg{
+                    width: 190px;
+                }
+
+            </style>
+            <img src="Vintage Colorful Retro Vibes Typographic Product Brand Logo(1)(1).png" alt="" srcset="" class="logoimg">
+        </div>
+        
+        <button class="mobile-menu-btn">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <div class="nav-links">
+            <a href="#features">Home</a>
+            <a href="#integration">About</a>
+            <a href="#testimonials">Integrations</a>
+            <a href="#about">Testimonials</a>
+        </div>
+
+        <div class="auth-buttons">
+            <a href="dashboard.html" class="btn btn-outline">Sign In</a>
+            <a href="#cta" class="btn btn-primary">Get Started</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>Unify Your CRM & Accounting in One Powerful Platform</h1>
+                <p>Streamline your business operations with our integrated CRM and accounting solution. Manage leads, customers, invoices, and payments seamlessly.</p>
+                <div class="hero-buttons">
+                    <a href="dashboard.html" class="btn btn-primary">
+                        <i class="fas fa-rocket"></i>
+                        Launch Dashboard
+                    </a>
+                    <a href="#features" class="btn btn-outline">
+                        <i class="fas fa-play-circle"></i>
+                        Watch Demo
+                    </a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <div class="dashboard-container">
+                    <div class="dashboard-preview">
+                        <div class="dashboard-header">
+                            <div style="font-weight: 600; color: var(--primary);">Meray Dashboard</div>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <div style="width: 12px; height: 12px; border-radius: 50%; background: #ef4444;"></div>
+                                <div style="width: 12px; height: 12px; border-radius: 50%; background: #f59e0b;"></div>
+                                <div style="width: 12px; height: 12px; border-radius: 50%; background: #10b981;"></div>
+                            </div>
+                        </div>
+                        <div class="dashboard-stats" style="z-index: 39;">
+                            <div class="stat-card" data-info="Total number of potential customers in your pipeline" style="z-index: 39;">
+                                <div class="stat-value">142</div>
+                                <div class="stat-label">Total Leads</div>
+                            </div>
+                            <div class="stat-card" data-info="Currently active customer accounts">
+                                <div class="stat-value">87</div>
+                                <div class="stat-label">Active Customers</div>
+                            </div>
+                            <div class="stat-card" data-info="Total value of unpaid invoices">
+                                <div class="stat-value">$42.5K</div>
+                                <div class="stat-label">Outstanding Invoices</div>
+                            </div>
+                            <div class="stat-card" data-info="Cash received this month" >
+                                <div class="stat-value">$28.4K</div>
+                                <div class="stat-label">Cash Received (MTD)</div>
+                            </div>
+                        </div>
+                        <div class="dashboard-graph">
+                            <div class="graph-title">Monthly Performance Overview</div>
+                            <div class="graph-lines">
+                                <div class="graph-line"></div>
+                                <div class="graph-line"></div>
+                                <div class="graph-line"></div>
+                            </div>
+                            <div class="graph-container">
+                                <div class="bar-container">
+                                    <div class="bar" data-value="142" style="height: 71%;">
+                                        <div class="bar-value">142 Leads</div>
+                                    </div>
+                                    <div class="bar-label">Leads</div>
+                                </div>
+                                <div class="bar-container">
+                                    <div class="bar" data-value="87" style="height: 43.5%;">
+                                        <div class="bar-value">87 Customers</div>
+                                    </div>
+                                    <div class="bar-label">Customers</div>
+                                </div>
+                                <div class="bar-container">
+                                    <div class="bar" data-value="42.5" style="height: 85%;">
+                                        <div class="bar-value">$42.5K</div>
+                                    </div>
+                                    <div class="bar-label">Invoices</div>
+                                </div>
+                                <div class="bar-container">
+                                    <div class="bar" data-value="28.4" style="height: 56.8%;">
+                                        <div class="bar-value">$28.4K</div>
+                                    </div>
+                                    <div class="bar-label">Revenue</div>
+                                </div>
+                                <div class="bar-container">
+                                    <div class="bar" data-value="65" style="height: 32.5%;">
+                                        <div class="bar-value">65% Rate</div>
+                                    </div>
+                                    <div class="bar-label">Conversion</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dashboard-activity">
+                            <div class="activity-item">
+                                <div class="activity-indicator"></div>
+                                <span>Data Syncing</span>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-indicator"></div>
+                                <span>Real-time Updates</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="tooltip" id="dashboard-tooltip"></div>
+
+    <script>
+        // Mobile menu toggle
+        document.querySelector('.mobile-menu-btn').addEventListener('click', function() {
+            document.querySelector('.nav-links').classList.toggle('active');
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Navbar background on scroll
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 100) {
+                navbar.style.background = '#f6f4e8';
+                navbar.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.1)';
+            } else {
+                navbar.style.background = '#f6f4e8';
+                navbar.style.boxShadow = 'var(--shadow)';
+            }
+        });
+
+        // Enhanced dashboard functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const tooltip = document.getElementById('dashboard-tooltip');
+            const statCards = document.querySelectorAll('.stat-card');
+            const bars = document.querySelectorAll('.bar');
+            
+            // Function to animate number counters
+            function animateCounter(element, target, duration) {
+                let start = 0;
+                const increment = target / (duration / 16);
+                const timer = setInterval(() => {
+                    start += increment;
+                    if (start >= target) {
+                        element.textContent = target;
+                        clearInterval(timer);
+                    } else {
+                        element.textContent = Math.floor(start);
+                    }
+                }, 16);
+            }
+            
+            // Function to animate currency counters
+            function animateCurrencyCounter(element, target, duration, prefix, suffix) {
+                let start = 0;
+                const increment = target / (duration / 16);
+                const timer = setInterval(() => {
+                    start += increment;
+                    if (start >= target) {
+                        element.textContent = `${prefix}${target}${suffix}`;
+                        clearInterval(timer);
+                    } else {
+                        element.textContent = `${prefix}${start.toFixed(1)}${suffix}`;
+                    }
+                }, 16);
+            }
+            
+            // Initialize counters
+            const statValues = document.querySelectorAll('.stat-value');
+            
+            // Reset values to 0 for animation
+            statValues[0].textContent = '0';
+            statValues[1].textContent = '0';
+            statValues[2].textContent = '$0';
+            statValues[3].textContent = '$0';
+            
+            // Animate ALL counters
+            setTimeout(() => {
+                animateCounter(statValues[0], 142, 2000);
+                animateCounter(statValues[1], 87, 2000);
+                
+                // Animate the currency values too
+                animateCurrencyCounter(statValues[2], 42.5, 2000, '$', 'K');
+                animateCurrencyCounter(statValues[3], 28.4, 2000, '$', 'K');
+            }, 500);
+            
+            // Tooltip functionality for stat cards (simplified - no hover effects)
+            statCards.forEach(card => {
+                // Click to update value (kept for functionality)
+                card.addEventListener('click', function() {
+                    // Add visual feedback
+                    this.style.background = 'rgba(45, 90, 65, 0.1)';
+                    setTimeout(() => {
+                        this.style.background = '';
+                    }, 300);
+                    
+                    // Pulse animation
+                    this.style.animation = 'pulse 0.5s ease-in-out';
+                    setTimeout(() => {
+                        this.style.animation = '';
+                    }, 500);
+                });
+            });
+            
+            // Bar graph interactions
+            bars.forEach(bar => {
+                // Animate bars on load
+                const originalHeight = bar.style.height;
+                bar.style.height = '0%';
+                
+                setTimeout(() => {
+                    bar.style.transition = 'height 1s ease-out';
+                    bar.style.height = originalHeight;
+                }, 500);
+                
+                // Bar hover effects
+                bar.addEventListener('mouseenter', function(e) {
+                    this.style.transform = 'scaleY(1.05)';
+                    this.style.filter = 'brightness(1.1)';
+                    this.style.boxShadow = '0 0 12px rgba(45, 90, 65, 0.3)';
+                    
+                    // Show tooltip for bars
+                    const value = this.getAttribute('data-value');
+                    const label = this.parentElement.querySelector('.bar-label').textContent;
+                    tooltip.textContent = `${value} ${label}`;
+                    tooltip.style.opacity = '1';
+                    tooltip.style.left = (e.pageX + 10) + 'px';
+                    tooltip.style.top = (e.pageY - 30) + 'px';
+                });
+                
+                bar.addEventListener('mousemove', function(e) {
+                    tooltip.style.left = (e.pageX + 10) + 'px';
+                    tooltip.style.top = (e.pageY - 30) + 'px';
+                });
+                
+                bar.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scaleY(1)';
+                    this.style.filter = 'brightness(1)';
+                    this.style.boxShadow = 'none';
+                    tooltip.style.opacity = '0';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
