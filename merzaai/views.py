@@ -319,50 +319,50 @@ def add_invoice_api(request):
         invoice_count = len(invoices) + 1
         invoice_number = f"INV-{invoice_count:04d}"
         
-        customer_value = request.data.get('customer', '')
+        customer_id = request.data.get('customer_id')
+        customer_name = request.data.get('customer_name', '')
+        customer_company = request.data.get('customer_company', '')
         
-        customer_name = customer_value
-        customer_id = None
-        
-        # Try to parse as integer ID
-        try:
-            customer_id = int(customer_value)
-            customers_path = os.path.join(settings.JSON_DIR, 'customers.json')
-            with open(customers_path, 'r') as f:
-                customers_data = json.load(f)
-            
-            customers = customers_data.get('customers', [])
-            for customer in customers:
-                if customer['id'] == customer_id:
-                    customer_name = f"{customer['company']} - {customer['name']}"
-                    break
-        except (ValueError, TypeError):
-            # If it's not an integer, use the value directly (it's already the customer name)
-            pass
+        # If it's a regular customer invoice, get customer details
+        if customer_id and customer_id != 'custom':
+            try:
+                customers_path = os.path.join(settings.JSON_DIR, 'customers.json')
+                with open(customers_path, 'r') as f:
+                    customers_data = json.load(f)
+                
+                customers = customers_data.get('customers', [])
+                for customer in customers:
+                    if customer['id'] == customer_id:
+                        customer_name = f"{customer['company']} - {customer['name']}"
+                        customer_company = customer['company']
+                        break
+            except Exception as e:
+                print("Error fetching customer details:", str(e))
         
         # Create new invoice
         new_invoice = {
             "id": new_id,
             "number": invoice_number,
             "customer": customer_name,
-            "customer_id": customer_id,
+            "customer_id": customer_id if customer_id != 'custom' else None,
+            "customer_company": customer_company,
             "date": request.data.get('date'),
-            "dueDate": request.data.get('dueDate'),
+            "dueDate": request.data.get('due_date') or request.data.get('dueDate'),
             "status": request.data.get('status', 'draft'),
             "items": request.data.get('items', []),
             "subtotal": request.data.get('subtotal', 0),
             "vat": request.data.get('vat', 0),
             "total": request.data.get('total', 0)
         }
-        
+        print(new_invoice,"fellix")
         invoices.append(new_invoice)
         data['invoices'] = invoices
         
         with open(file_path, 'w') as f:
             json.dump(data, f, indent=2)
         
-        # ✅ ADD THIS PART: Update customer record
-        if customer_id is not None:
+        # Update customer record if it's a regular customer
+        if customer_id and customer_id != 'custom':
             try:
                 customers_path = os.path.join(settings.JSON_DIR, 'customers.json')
                 with open(customers_path, 'r') as f:
@@ -398,7 +398,6 @@ def add_invoice_api(request):
                 
             except Exception as e:
                 print("Error updating customer record:", str(e))
-                # Don't return error here, just log it since invoice was already created
         
         print("Invoice added successfully!")
         return Response(new_invoice, status=status.HTTP_201_CREATED)
@@ -406,7 +405,104 @@ def add_invoice_api(request):
     except Exception as e:
         print("Error:", str(e))
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
+
+
+
+@api_view(['POST'])
+def add_custom_invoice_api(request):
+    print("Received custom invoice data:", request.data)
+    invoices_path = os.path.join(settings.JSON_DIR, 'invoices.json')
+    customers_path = os.path.join(settings.JSON_DIR, 'customers.json')
+
+    try:
+        # Read invoices data
+        with open(invoices_path, 'r') as f:
+            invoices_data = json.load(f)
+        
+        invoices = invoices_data.get('invoices', [])
+        
+        new_id = max([invoice.get('id', 0) for invoice in invoices], default=0) + 1
+        invoice_count = len(invoices) + 1
+        invoice_number = f"INV-CUST-{invoice_count:04d}"
+        
+        custom_details = request.data.get('custom_details', {})
+        add_as_customer = request.data.get('add_as_customer', True)  # Default to True for "Save Customer"
+        
+        customer_name = f"{custom_details.get('companyName', '')} - {custom_details.get('contactPerson', '')}"
+        
+        # Create new invoice
+        new_invoice = {
+            "id": new_id,
+            "number": invoice_number,
+            "customer": customer_name,
+            "customer_id": None,  # No customer ID for custom invoices
+            "customer_company": custom_details.get('companyName', ''),
+            "custom_details": custom_details,
+            "date": request.data.get('date'),
+            "dueDate": request.data.get('due_date') or request.data.get('dueDate'),
+
+            "status": request.data.get('status', 'draft'),
+            "items": request.data.get('items', []),
+            "subtotal": request.data.get('subtotal', 0),
+            "vat": request.data.get('vat', 0),
+            "total": request.data.get('total', 0)
+        }
+        print(new_invoice)
+        invoices.append(new_invoice)
+        invoices_data['invoices'] = invoices
+        
+        # Save invoice
+        with open(invoices_path, 'w') as f:
+            json.dump(invoices_data, f, indent=2)
+        
+        # Add as customer (always True for "Save Customer" button)
+        if add_as_customer:
+            try:
+                with open(customers_path, 'r') as f:
+                    customers_data = json.load(f)
+                
+                customers = customers_data.get('customers', [])
+                new_customer_id = max([c.get('id', 0) for c in customers], default=0) + 1
+                
+                new_customer = {
+                    "id": new_customer_id,
+                    "name": custom_details.get('contactPerson', ''),
+                    "company": custom_details.get('companyName', ''),
+                    "title": custom_details.get('title', ''), 
+                    "email": custom_details.get('email', ''),
+                    "phone": custom_details.get('phone', ''),
+                    "address": custom_details.get('address', ''),
+                    "trn": custom_details.get('trnNumber', ''),
+                    "addedDate": datetime.now().strftime("%B %d, %Y"),
+                    "notes": "Added from custom invoice",
+                    "totalInvoices": 1,
+                    "totalAmount": request.data.get('total', 0),
+                    "invoices": [{
+                        "number": invoice_number,
+                        "date": request.data.get('date'),
+                        "amount": request.data.get('total', 0),
+                        "status": request.data.get('status', 'draft')
+                    }]
+                }
+                
+                customers.append(new_customer)
+                customers_data['customers'] = customers
+                
+                with open(customers_path, 'w') as f:
+                    json.dump(customers_data, f, indent=2)
+                
+                print("Custom invoice customer added successfully!")
+                
+            except Exception as e:
+                print("Error adding custom invoice customer:", str(e))
+        
+        print("Custom invoice added successfully!")
+        return Response(new_invoice, status=status.HTTP_201_CREATED)
+        
+    except Exception as e:
+        print("Error:", str(e))
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 @api_view(['POST'])
 def edit_invoice_api(request):
@@ -655,6 +751,130 @@ def add_payment_api(request):
     
 
 
+@api_view(['GET'])
+def chart_of_accounts_api(request):
+    file_path = os.path.join(settings.JSON_DIR, 'chart_of_accounts.json')
+    try:
+        with open(file_path, 'r') as f:
+            data = json.load(f)
+        accounts = data.get('COA', [])
+        # Add IDs if not present
+        for index, account in enumerate(accounts, 1):
+            if 'id' not in account:
+                account['id'] = index
+        return Response(accounts)
+    except FileNotFoundError:
+        return Response([], status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['POST'])
+def add_account_api(request):
+    file_path = os.path.join(settings.JSON_DIR, 'chart_of_accounts.json')
+    try:
+        # Try to read existing file
+        try:
+            with open(file_path, 'r') as f:
+                data = json.load(f)
+        except FileNotFoundError:
+            data = {"COA": []}
+        
+        accounts = data.get('COA', [])
+        
+        # Convert vatApplicable to string for consistency
+        vat_applicable = "Yes" if request.data.get('vatApplicable') else "No"
+        
+        new_account = {
+            "id": len(accounts) + 1,
+            "accountCode": request.data.get('accountCode'),
+            "accountName": request.data.get('accountName'),
+            "accountType": request.data.get('accountType'),
+            "description": request.data.get('description', ''),
+            "vatApplicable": vat_applicable
+        }
+        
+        accounts.append(new_account)
+        data['COA'] = accounts
+        
+        with open(file_path, 'w') as f:
+            json.dump(data, f, indent=2)
+        
+        return Response(new_account, status=status.HTTP_201_CREATED)
+        
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+def edit_account_api(request, account_id):
+    file_path = os.path.join(settings.JSON_DIR, 'chart_of_accounts.json')
+    print(f"Editing account {account_id}")  # Debug line
+    
+    try:
+        with open(file_path, 'r') as f:
+            data = json.load(f)
+        
+        accounts = data.get('COA', [])
+        account_found = False
+        
+        for account in accounts:
+            if account.get('id') == account_id:
+                # Convert vatApplicable to string for consistency
+                vat_applicable = "Yes" if request.data.get('vatApplicable') else "No"
+                
+                account.update({
+                    "accountCode": request.data.get('accountCode'),
+                    "accountName": request.data.get('accountName'),
+                    "accountType": request.data.get('accountType'),
+                    "description": request.data.get('description', ''),
+                    "vatApplicable": vat_applicable
+                })
+                account_found = True
+                print(f"Account updated: {account}")  # Debug line
+                break
+        
+        if not account_found:
+            print(f"Account with ID {account_id} not found")  # Debug line
+            return Response({"error": "Account not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        with open(file_path, 'w') as f:
+            json.dump(data, f, indent=2)
+        
+        print("Account file saved successfully")  # Debug line
+        return Response({"message": "Account updated successfully"})
+        
+    except Exception as e:
+        print(f"Error updating account: {str(e)}")  # Debug line
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['DELETE'])
+def delete_account_api(request, account_id):
+    file_path = os.path.join(settings.JSON_DIR, 'chart_of_accounts.json')
+    print(f"Deleting account {account_id}")  # Debug line
+    
+    try:
+        with open(file_path, 'r') as f:
+            data = json.load(f)
+        
+        accounts = data.get('COA', [])
+        initial_count = len(accounts)
+        
+        # Filter out the account to delete
+        accounts = [acc for acc in accounts if acc.get('id') != account_id]
+        
+        if len(accounts) == initial_count:
+            print(f"Account with ID {account_id} not found for deletion")  # Debug line
+            return Response({"error": "Account not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        data['COA'] = accounts
+        
+        with open(file_path, 'w') as f:
+            json.dump(data, f, indent=2)
+        
+        print(f"Account {account_id} deleted successfully")  # Debug line
+        return Response(status=status.HTTP_204_NO_CONTENT)
+        
+    except Exception as e:
+        print(f"Error deleting account: {str(e)}")  # Debug line
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 from datetime import datetime, timedelta
@@ -825,6 +1045,9 @@ def calculate_trend(current, previous):
     if previous == 0:
         return 0
     return round(((current - previous) / previous) * 100, 1)
+
+
+
 
 
 

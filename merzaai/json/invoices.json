@@ -107,7 +107,7 @@
       "customer_id": 2,
       "date": "2023-08-31",
       "dueDate": "2023-09-30",
-      "status": "pending",
+      "status": "paid",
       "items": [
         {
           "description": "Monthly Subscription Fee",
@@ -147,7 +147,7 @@
       "customer_id": 3,
       "date": "2023-08-25",
       "dueDate": "2023-09-25",
-      "status": "pending",
+      "status": "paid",
       "items": [
         {
           "description": "LMS Development Phase 2",
@@ -207,7 +207,7 @@
       "customer_id": 4,
       "date": "2023-09-30",
       "dueDate": "2023-10-30",
-      "status": "pending",
+      "status": "paid",
       "items": [
         {
           "description": "Monthly Maintenance & Support",
@@ -310,15 +310,65 @@
       "status": "draft",
       "items": [
         {
-          "description": "fekx",
+          "description": "Service",
           "quantity": 1,
-          "price": "989",
+          "price": 989,
           "amount": 989
         }
       ],
       "subtotal": 989,
       "vat": 49.45,
       "total": 1038.45
+    },
+    {
+      "id": 17,
+      "number": "INV-0017",
+      "customer": "MediCare Solutions - Lisa Rodriguez",
+      "customer_id": 2,
+      "date": "2025-11-20",
+      "dueDate": "2025-12-20",
+      "status": "draft",
+      "items": [
+        {
+          "description": "Service",
+          "quantity": 1,
+          "price": 36046,
+          "amount": 36046
+        }
+      ],
+      "subtotal": 36046,
+      "vat": 1802.3,
+      "total": 37848.3
+    },
+    {
+      "id": 18,
+      "number": "INV-CUST-0018",
+      "customer": "Stratwings  - deq",
+      "customer_id": null,
+      "customer_company": "Stratwings ",
+      "custom_details": {
+        "companyName": "Stratwings ",
+        "contactPerson": "deq",
+        "title": "cto",
+        "email": "felix@gmail.com",
+        "phone": "8728372878",
+        "address": "Mangesi malsa building flat no 2 vijaynagar kajubag karwar\nPOST-CHENDIA IDOOR KARWAR",
+        "trnNumber": "68825692"
+      },
+      "date": "2025-11-20",
+      "dueDate": "2025-12-20",
+      "status": "draft",
+      "items": [
+        {
+          "description": "gel",
+          "quantity": 1,
+          "price": "90.0",
+          "amount": 90
+        }
+      ],
+      "subtotal": 90,
+      "vat": 4.5,
+      "total": 94.5
     }
   ]
 }

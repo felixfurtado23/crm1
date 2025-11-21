@@ -30,11 +30,17 @@ urlpatterns = [
     path('api/customers/<int:customer_id>/delete/', delete_customer_api, name='delete-customer-api'),
     path('api/invoices/', invoices_api, name='invoices-api'),
     path('api/invoices/add/', add_invoice_api, name='add-invoice-api'),
+    path('api/invoices/add-custom/', add_custom_invoice_api, name='add_custom_invoice'),
     path('api/invoices/edit/', edit_invoice_api, name='edit-invoice-api'),
     path('api/invoices/<int:invoice_id>/delete/', delete_invoice_api, name='delete-invoice-api'),
     path('api/invoices/<int:invoice_id>/mark-sent/', mark_invoice_sent, name='mark_invoice_sent'),
     path('api/invoices/<int:invoice_id>/mark-paid/', mark_invoice_paid_api, name='mark-invoice-paid-api'),
     path('api/invoices/summary/', invoice_summary_api, name='invoice_summary'),
+
+    path('api/chart-of-accounts/', chart_of_accounts_api, name='chart_of_accounts'),
+    path('api/chart-of-accounts/add/', add_account_api, name='add_account'),
+    path('api/chart-of-accounts/<int:account_id>/edit/', edit_account_api, name='edit_account'),
+    path('api/chart-of-accounts/<int:account_id>/delete/', delete_account_api, name='delete_account'),
     
     # Payments URLs
     path('api/payments/', payments_api, name='payments-api'),

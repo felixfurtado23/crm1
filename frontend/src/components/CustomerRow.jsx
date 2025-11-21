@@ -74,12 +74,7 @@ const CustomerRow = ({ customer }) => {
             >
               <i className="fas fa-edit"></i> 
             </button>
-            <button
-              className="action-btn invoice"
-              onClick={() => handleAction("invoice")}
-            >
-              <i className="fas fa-file-invoice"></i> 
-            </button>
+        
             <button
               className="action-btn delete"
               onClick={() => handleAction("delete")}

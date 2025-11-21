@@ -6,78 +6,122 @@ import Customers from './pages/Customers';
 import Invoicing from './pages/Invoicing';
 import Dashboard from './pages/Dashboard';
 import Reports from './pages/Reports';
+import ChartOfAccounts from './pages/ChartOfAccounts'; // Add this import
 import './styles.css';
 
 function App() {
-  // Get saved tab from localStorage, default to 'Customers'
-  const [activeTab, setActiveTab] = useState(() => {
-    return localStorage.getItem('activeTab') || 'Dashboard';
+  const [activeMainNav, setActiveMainNav] = useState(() => {
+    return localStorage.getItem('activeMainNav') || 'dashboard';
   });
 
-  // Save to localStorage whenever activeTab changes
+  const [activeSubNav, setActiveSubNav] = useState(() => {
+    return localStorage.getItem('activeSubNav') || '';
+  });
+
+  const [activePage, setActivePage] = useState(() => {
+    return localStorage.getItem('activePage') || '';
+  });
+
   useEffect(() => {
-    localStorage.setItem('activeTab', activeTab);
-  }, [activeTab]);
+    localStorage.setItem('activeMainNav', activeMainNav);
+    localStorage.setItem('activeSubNav', activeSubNav);
+    localStorage.setItem('activePage', activePage);
+  }, [activeMainNav, activeSubNav, activePage]);
+
+  // Set default page when sub-nav changes
+  useEffect(() => {
+    if (activeMainNav === 'operations' && activeSubNav) {
+      let defaultPage = '';
+      switch (activeSubNav) {
+        case 'revenue':
+          defaultPage = 'customers';
+          break;
+        case 'expenses':
+          defaultPage = 'vendors';
+          break;
+        case 'accounting':
+          defaultPage = 'chart-of-accounts';
+          break;
+        default:
+          defaultPage = '';
+      }
+      // Only set default page if no page is currently selected
+      if (defaultPage && !activePage) {
+        setActivePage(defaultPage);
+      }
+    }
+  }, [activeMainNav, activeSubNav, activePage]);
+
+  // Set default when switching to Operations
+  useEffect(() => {
+    if (activeMainNav === 'operations' && !activeSubNav) {
+      setActiveSubNav('revenue');
+      setActivePage('customers');
+    }
+  }, [activeMainNav, activeSubNav]);
 
   const renderContent = () => {
-    switch (activeTab) {
-      case 'Leads':
-        return <Leads />;
-      case 'Customers':
-        return <Customers />;
-      case 'Dashboard':
-        return <Dashboard />;
-      case 'Accounting':
-        return <Invoicing/>;
-      case 'Reports':
-        return <Reports />;
-
-      default:
-        return <Customers />;
+    // Direct pages (no sub-nav needed)
+    if (activeMainNav === 'dashboard') return <Dashboard />;
+    if (activeMainNav === 'reports') return <Reports />;
+    if (activeMainNav === 'leads') return <Leads />;
+    if (activeMainNav === 'chart-of-accounts') return <ChartOfAccounts />; // Add this line
+    
+    // Operations pages
+    if (activeMainNav === 'operations') {
+      switch (activePage) {
+        case 'customers':
+          return <Customers />;
+        case 'invoicing':
+          return <Invoicing />;
+        case 'vendors':
+          return <div className="page-placeholder">Vendors Page - Coming Soon</div>;
+        case 'expense-input':
+          return <div className="page-placeholder">Expense Input Page - Coming Soon</div>;
+        case 'chart-of-accounts':
+          return <ChartOfAccounts />;
+        case 'manual-journals':
+          return <div className="page-placeholder">Manual Journals Page - Coming Soon</div>;
+        default:
+          // Show default page based on activeSubNav
+          switch (activeSubNav) {
+            case 'revenue':
+              return <Customers />;
+            case 'expenses':
+              return <div className="page-placeholder">Vendors Page - Coming Soon</div>;
+            case 'accounting':
+              return <ChartOfAccounts />;
+            default:
+              return <div className="page-placeholder">Select a section from Operations</div>;
+          }
+      }
     }
+
+    return <Dashboard />;
   };
 
   return (
     <div className="dashboard">
-      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+      <Sidebar 
+        activeMainNav={activeMainNav} 
+        setActiveMainNav={setActiveMainNav}
+        setActiveSubNav={setActiveSubNav}
+        setActivePage={setActivePage}
+      />
       
       <main className="main-content">
-        <Topbar />
-        
-        <div className="module-tabs">
-          <div 
-            className={`module-tab ${activeTab === 'Dashboard' ? 'active' : ''}`}
-            onClick={() => setActiveTab('Dashboard')}
-          >
-            Dashboard
-          </div>
-          <div 
-            className={`module-tab ${activeTab === 'Leads' ? 'active' : ''}`}
-            onClick={() => setActiveTab('Leads')}
-          >
-            Leads
-          </div>
-          <div 
-            className={`module-tab ${activeTab === 'Customers' ? 'active' : ''}`}
-            onClick={() => setActiveTab('Customers')}
-          >
-            Customers
-          </div>
-          <div 
-            className={`module-tab ${activeTab === 'Accounting' ? 'active' : ''}`}
-            onClick={() => setActiveTab('Accounting')}
-          >
-            Accounting
-          </div>
-          <div 
-            className={`module-tab ${activeTab === 'Reports' ? 'active' : ''}`}
-            onClick={() => setActiveTab('Reports')}
-          >
-            Reports
-          </div>
-        </div>
+        <Topbar 
+          activeMainNav={activeMainNav} 
+          activeSubNav={activeSubNav}
+          activePage={activePage}
+          setActiveSubNav={setActiveSubNav}
+          setActivePage={setActivePage}
+        />
 
-        {renderContent()}
+        {/* Main Content */}
+        <div className="content-area">
+          {renderContent()}
+        </div>
       </main>
     </div>
   );

@@ -43,8 +43,8 @@
       "address": "250 Healthcare Drive\nMiami, FL 33101",
       "addedDate": "April 18, 2023",
       "notes": "Healthcare provider with multiple locations. Regular billing services.",
-      "totalInvoices": 3,
-      "totalAmount": 19800,
+      "totalInvoices": 4,
+      "totalAmount": 57648.3,
       "invoices": [
         {
           "number": "INV-2023-003",
@@ -63,6 +63,12 @@
           "date": "August 31, 2023",
           "amount": 7200,
           "status": "pending"
+        },
+        {
+          "number": "INV-0017",
+          "date": "2025-11-20",
+          "amount": 37848.3,
+          "status": "draft"
         }
       ]
     },
@@ -182,6 +188,28 @@
           "number": "INV-0015",
           "date": "2025-11-10",
           "amount": 105,
+          "status": "draft"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "deq",
+      "company": "Stratwings ",
+      "title": "cto",
+      "email": "felix@gmail.com",
+      "phone": "8728372878",
+      "address": "Mangesi malsa building flat no 2 vijaynagar kajubag karwar\nPOST-CHENDIA IDOOR KARWAR",
+      "trn": "68825692",
+      "addedDate": "November 20, 2025",
+      "notes": "Added from custom invoice",
+      "totalInvoices": 1,
+      "totalAmount": 94.5,
+      "invoices": [
+        {
+          "number": "INV-CUST-0018",
+          "date": "2025-11-20",
+          "amount": 94.5,
           "status": "draft"
         }
       ]

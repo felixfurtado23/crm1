@@ -17,6 +17,28 @@ const InvoiceRow = ({ invoice }) => {
     return statusMap[status] || 'status-draft';
   };
 
+  // Format customer display
+  const formatCustomerDisplay = () => {
+    // If it's a custom invoice with custom_details
+    if (invoice.custom_details) {
+      const { companyName, contactPerson } = invoice.custom_details;
+      return `${companyName} - ${contactPerson}`;
+    }
+    
+    // If it's a regular customer invoice with customer_company
+    if (invoice.customer_company && invoice.customer) {
+      // Extract name from the customer field (which might be "Company - Name")
+      const customerParts = invoice.customer.split(' - ');
+      if (customerParts.length === 2) {
+        return `${invoice.customer_company} - ${customerParts[1]}`;
+      }
+      return `${invoice.customer_company} - ${invoice.customer}`;
+    }
+    
+    // Fallback to the original customer field
+    return invoice.customer;
+  };
+
   const handleAction = async (action) => {
     if (action === 'view' || action === 'edit') {
       setModalType(action);
@@ -72,7 +94,7 @@ const InvoiceRow = ({ invoice }) => {
     <>
       <tr>
         <td>{invoice.number}</td>
-        <td>{invoice.customer}</td>
+        <td>{formatCustomerDisplay()}</td>
         <td>{invoice.date}</td>
         <td>{invoice.dueDate}</td>
         <td>${invoice.total}</td>

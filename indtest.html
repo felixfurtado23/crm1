@@ -1,0 +1,807 @@
+
+
+
+
+<style>
+
+    .features-stack {
+    padding: 120px 5%;
+    background: var(--background);
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+}
+
+.stack-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.stack-header {
+    text-align: center;
+    margin-bottom: 80px;
+}
+
+.stack-badge {
+    display: inline-block;
+    background: var(--primary);
+    color: white;
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 2rem;
+    letter-spacing: 0.5px;
+}
+
+.stack-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+    margin-bottom: 1.5rem;
+}
+
+.stack-subtitle {
+    font-size: 1.3rem;
+    color: var(--text-light);
+    line-height: 1.6;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.card-stack-container {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    margin: 0 auto;
+    perspective: 1000px;
+}
+
+.card-stack {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+}
+
+.card {
+    position: absolute;
+    width: 90%;
+    max-width: 800px;
+    height: 400px;
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+    border-radius: 20px;
+    box-shadow: var(--shadow-lg);
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.5s ease;
+    backface-visibility: hidden;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.card.active {
+    z-index: 10;
+    transform: translateX(-50%) translateY(0) scale(1);
+    opacity: 1;
+}
+
+.card.prev {
+    z-index: 9;
+    transform: translateX(-50%) translateY(20px) scale(0.95);
+    opacity: 0.7;
+    filter: blur(1px);
+}
+
+.card.next {
+    z-index: 8;
+    transform: translateX(-50%) translateY(40px) scale(0.9);
+    opacity: 0.4;
+    filter: blur(2px);
+}
+
+.card.hidden {
+    transform: translateX(-50%) translateY(60px) scale(0.85);
+    opacity: 0;
+    filter: blur(3px);
+}
+
+.card-number {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 40px;
+    height: 40px;
+    background: var(--primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.card-title {
+    font-size: 2.2rem;
+    color: white;
+    margin-bottom: 30px;
+    font-weight: 600;
+    text-align: center;
+    max-width: 90%;
+}
+
+.card-description {
+    font-size: 1.3rem;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.6;
+    max-width: 80%;
+    text-align: center;
+}
+
+.navigation {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 40px;
+    gap: 20px;
+}
+
+.nav-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow);
+}
+
+.nav-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.nav-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.progress {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+.progress-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.progress-dot.active {
+    background: var(--primary);
+    transform: scale(1.2);
+}
+
+@media (max-width: 768px) {
+    .card {
+        width: 90%;
+        height: 350px;
+        padding: 30px 20px;
+    }
+    
+    .card-title {
+        font-size: 1.5rem;
+    }
+    
+    .card-description {
+        font-size: 1rem;
+    }
+}
+</style>
+
+
+
+<section class="features-stack">
+    <div class="stack-container">
+        <div class="stack-header">
+            <div class="stack-badge">POWERFUL FEATURES</div>
+            <h2 class="stack-title">Everything Your Business Needs</h2>
+            <p class="stack-subtitle">12 powerful features to streamline your accounting and CRM</p>
+        </div>
+
+        <div class="card-stack-container">
+            <div class="card-stack">
+                <!-- Cards will be dynamically inserted here -->
+            </div>
+        </div>
+        
+        <div class="navigation">
+            <button class="nav-btn prev-btn">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            
+            <div class="progress">
+                <!-- Progress dots will be dynamically inserted here -->
+            </div>
+            
+            <button class="nav-btn next-btn">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+</section>
+
+
+<script>
+    // Feature Cards Stack
+document.addEventListener('DOMContentLoaded', function() {
+    const features = [
+        "Unified Accounting & CRM",
+        "Smart Invoicing (Create Invoice → Customer Auto-Created)",
+        "Vendor & Expense Management",
+        "Cash Flow Forecasting & Liquidity Tracking",
+        "Bank Integration & Automated Entries",
+        "Image/PDF Receipt Scanner & Mobile Upload",
+        "Easy Chart of Accounts (UAE-ready & customizable)",
+        "Excel/Zoho/Odoo Migration in Minutes",
+        "Real-Time Dashboards (pivot-like custom reports)",
+        "VAT & Corporate Tax Auto-Calculation & FTA Filing",
+        "Unlimited Users",
+        "Full Customization per Business"
+    ];
+
+    const cardStack = document.querySelector('.card-stack');
+    const progressContainer = document.querySelector('.progress');
+    const prevBtn = document.querySelector('.prev-btn');
+    const nextBtn = document.querySelector('.next-btn');
+
+    let currentIndex = 0;
+
+    // Create cards
+    features.forEach((feature, index) => {
+        // Create card
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+            <div class="card-number">${index + 1}</div>
+            <h2 class="card-title">${feature}</h2>
+            <p class="card-description">Streamline your business processes with our comprehensive ${feature.toLowerCase()} solution.</p>
+        `;
+        cardStack.appendChild(card);
+
+        // Create progress dot
+        const dot = document.createElement('div');
+        dot.className = 'progress-dot';
+        dot.dataset.index = index;
+        progressContainer.appendChild(dot);
+    });
+
+    const cards = document.querySelectorAll('.card');
+    const dots = document.querySelectorAll('.progress-dot');
+
+    function updateCards() {
+        cards.forEach((card, index) => {
+            card.classList.remove('active', 'prev', 'next', 'hidden');
+            
+            if (index === currentIndex) {
+                card.classList.add('active');
+            } else if (index === currentIndex - 1) {
+                card.classList.add('prev');
+            } else if (index === currentIndex + 1) {
+                card.classList.add('next');
+            } else {
+                card.classList.add('hidden');
+            }
+        });
+
+        dots.forEach((dot, index) => {
+            dot.classList.toggle('active', index === currentIndex);
+        });
+
+        // Update button states
+        prevBtn.disabled = currentIndex === 0;
+        nextBtn.disabled = currentIndex === features.length - 1;
+    }
+
+    function nextCard() {
+        if (currentIndex < features.length - 1) {
+            currentIndex++;
+            updateCards();
+        }
+    }
+
+    function prevCard() {
+        if (currentIndex > 0) {
+            currentIndex--;
+            updateCards();
+        }
+    }
+
+    // Event listeners
+    prevBtn.addEventListener('click', prevCard);
+    nextBtn.addEventListener('click', nextCard);
+
+    dots.forEach(dot => {
+        dot.addEventListener('click', () => {
+            currentIndex = parseInt(dot.dataset.index);
+            updateCards();
+        });
+    });
+
+    // Initialize
+    updateCards();
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') {
+            prevCard();
+        } else if (e.key === 'ArrowRight') {
+            nextCard();
+        }
+    });
+});
+</script>
+
+<style>
+
+    :root {
+            --primary: #375b6d;
+            --primary-light: #4a636e;
+            --primary-dark: #0f1823;
+            --text: #1f221f;
+            --text-light: #6b7280;
+            --background: #f6f4e8;
+            --background-alt: #ebeae1;
+            --border: #e5e7eb;
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.1);
+            --gradient: #375b6d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+    .story-section {
+        padding: 120px 5%;
+        background: var(--background);
+        position: relative;
+    }
+
+    .story-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .story-header {
+        text-align: center;
+        margin-bottom: 80px;
+    }
+
+    .story-badge {
+        display: inline-block;
+        background: var(--primary);
+        color: white;
+        padding: 10px 25px;
+        border-radius: 25px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        letter-spacing: 0.5px;
+        box-shadow: 0 5px 15px rgba(55, 91, 109, 0.3);
+    }
+
+    .story-title {
+        font-size: 3.5rem;
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 1.5rem;
+        font-family: 'Georgia', serif;
+    }
+
+    .story-subtitle {
+        font-size: 1.3rem;
+        color: var(--text-light);
+        line-height: 1.6;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .timeline {
+        position: relative;
+        max-width: 1000px;
+        margin: 0 auto 80px;
+    }
+
+    .timeline::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 50%;
+        width: 3px;
+        background: linear-gradient(to bottom, var(--primary) 0%, var(--primary-light) 100%);
+        transform: translateX(-50%);
+        border-radius: 3px;
+    }
+
+    .timeline-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 60px;
+        position: relative;
+    }
+
+    .timeline-item:nth-child(odd) {
+        flex-direction: row;
+    }
+
+    .timeline-item:nth-child(even) {
+        flex-direction: row-reverse;
+    }
+
+    .timeline-content {
+        flex: 1;
+        padding: 2.5rem;
+        background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+        border-radius: 20px;
+        box-shadow: 0 20px 50px rgba(15, 24, 35, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        position: relative;
+        transition: all 0.4s ease;
+        color: white;
+    }
+
+    .timeline-content:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 30px 80px rgba(15, 24, 35, 0.4);
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .timeline-icon {
+        width: 80px;
+        height: 80px;
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 2;
+        transition: all 0.4s ease;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .timeline-item:nth-child(odd) .timeline-icon {
+        right: -40px;
+    }
+
+    .timeline-item:nth-child(even) .timeline-icon {
+        left: -40px;
+    }
+
+    .timeline-content:hover .timeline-icon {
+        transform: translateY(-50%) scale(1.15);
+        background: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .timeline-number {
+        font-size: 3rem;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.1);
+        position: absolute;
+        top: 1rem;
+        right: 2rem;
+        line-height: 1;
+    }
+
+    .timeline-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 1rem;
+        line-height: 1.3;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .timeline-description {
+        color: rgba(255, 255, 255, 0.9);
+        line-height: 1.6;
+        font-size: 1rem;
+    }
+
+    .team-credibility {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .team-card {
+        background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+        padding: 2.5rem 2rem;
+        border-radius: 20px;
+        text-align: center;
+        box-shadow: 0 20px 50px rgba(15, 24, 35, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.4s ease;
+        position: relative;
+        overflow: hidden;
+        color: white;
+    }
+
+    .team-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 30px 80px rgba(15, 24, 35, 0.4);
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .team-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-light) 0%, rgba(255, 255, 255, 0.3) 100%);
+    }
+
+    .team-avatar {
+        width: 100px;
+        height: 100px;
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        border-radius: 50%;
+        margin: 0 auto 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2.5rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        transition: all 0.4s ease;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .team-card:hover .team-avatar {
+        transform: scale(1.15);
+        background: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .team-name {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .team-role {
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 600;
+        margin-bottom: 1rem;
+        font-size: 0.95rem;
+    }
+
+    .team-bio {
+        color: rgba(255, 255, 255, 0.8);
+        line-height: 1.5;
+        font-size: 0.9rem;
+    }
+
+    .story-background {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .story-shape {
+        position: absolute;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary) 0%, transparent 70%);
+        opacity: 0.03;
+    }
+
+    .story-shape-1 {
+        width: 300px;
+        height: 300px;
+        top: 10%;
+        right: 5%;
+        animation: float 20s ease-in-out infinite;
+    }
+
+    .story-shape-2 {
+        width: 200px;
+        height: 200px;
+        bottom: 15%;
+        left: 3%;
+        animation: float 15s ease-in-out infinite reverse;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0) rotate(0deg); }
+        50% { transform: translateY(-20px) rotate(180deg); }
+    }
+
+    @media (max-width: 768px) {
+        .timeline::before {
+            left: 30px;
+        }
+
+        .timeline-item {
+            flex-direction: row !important;
+            margin-left: 60px;
+        }
+
+        .timeline-icon {
+            left: -90px !important;
+            right: auto !important;
+        }
+
+        .timeline-content {
+            padding: 2rem;
+        }
+
+        .story-title {
+            font-size: 2.8rem;
+        }
+
+        .team-credibility {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<section class="story-section">
+    <div class="story-background">
+        <div class="story-shape story-shape-1"></div>
+        <div class="story-shape story-shape-2"></div>
+    </div>
+    
+    <div class="story-container">
+        <div class="story-header">
+            <div class="story-badge">OUR STORY</div>
+            <h2 class="story-title">Built by Experts, Made for UAE</h2>
+            <p class="story-subtitle">From decades of financial experience to the platform that powers your business</p>
+        </div>
+
+        <div class="timeline">
+            <!-- Timeline Item 1 -->
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <div class="timeline-number">01</div>
+                    <div class="timeline-icon">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <h3 class="timeline-title">Created by Dubai Financial Experts</h3>
+                    <p class="timeline-description">Founded by seasoned accountants and financial advisors with deep understanding of UAE business landscape and regulatory requirements.</p>
+                </div>
+            </div>
+
+            <!-- Timeline Item 2 -->
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <div class="timeline-number">02</div>
+                    <div class="timeline-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="timeline-title">Over a Decade of Market Experience</h3>
+                    <p class="timeline-description">More than 10 years working with comparable systems, understanding their strengths and identifying their limitations firsthand.</p>
+                </div>
+            </div>
+
+            <!-- Timeline Item 3 -->
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <div class="timeline-number">03</div>
+                    <div class="timeline-icon">
+                        <i class="fas fa-handshake"></i>
+                    </div>
+                    <h3 class="timeline-title">100+ UAE Clients Experience</h3>
+                    <p class="timeline-description">Built Meray after working extensively with over 100 clients across the UAE, understanding their unique challenges and needs.</p>
+                </div>
+            </div>
+
+            <!-- Timeline Item 4 -->
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <div class="timeline-number">04</div>
+                    <div class="timeline-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h3 class="timeline-title">Best Features, No Limitations</h3>
+                    <p class="timeline-description">Took the best features from other systems and eliminated every limitation we experienced, creating the perfect platform.</p>
+                </div>
+            </div>
+
+            <!-- Timeline Item 5 -->
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <div class="timeline-number">05</div>
+                    <div class="timeline-icon">
+                        <i class="fas fa-flag"></i>
+                    </div>
+                    <h3 class="timeline-title">Made for UAE SMEs</h3>
+                    <p class="timeline-description">Specifically designed for UAE small and medium enterprises who want simplicity, control, and powerful features in one platform.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="team-credibility">
+            <!-- Team Card 1 -->
+            <div class="team-card">
+                <div class="team-avatar">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                <h4 class="team-name">Ahmed Al Maktoum</h4>
+                <div class="team-role">Lead Accountant & Co-founder</div>
+                <p class="team-bio">15+ years in UAE financial services, specializing in SME accounting and VAT compliance.</p>
+            </div>
+
+            <!-- Team Card 2 -->
+            <div class="team-card">
+                <div class="team-avatar">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <h4 class="team-name">Sarah Johnson</h4>
+                <div class="team-role">Financial Advisor & Co-founder</div>
+                <p class="team-bio">Former Big 4 consultant with expertise in UAE business optimization and growth strategies.</p>
+            </div>
+
+            <!-- Team Card 3 -->
+            <div class="team-card">
+                <div class="team-avatar">
+                    <i class="fas fa-cogs"></i>
+                </div>
+                <h4 class="team-name">Mohammed Hassan</h4>
+                <div class="team-role">Technology Director</div>
+                <p class="team-bio">Software architect with focus on creating intuitive business platforms for UAE market.</p>
+            </div>
+        </div>
+    </div>
+</section>

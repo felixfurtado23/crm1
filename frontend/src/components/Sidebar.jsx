@@ -1,22 +1,35 @@
 import React from 'react';
 
-const Sidebar = ({ activeTab, setActiveTab }) => {
-  const menuItems = [
-    { icon: 'fas fa-chart-pie', label: 'Dashboard', tab: 'Dashboard' },
-    { icon: 'fas fa-users', label: 'Leads', tab: 'Leads' },
-    { icon: 'fas fa-user-check', label: 'Customers', tab: 'Customers' },
-    { icon: 'fas fa-file-invoice-dollar', label: 'Accounting', tab: 'Accounting' },
-    { icon: 'fas fa-chart-bar', label: 'Reports', tab: 'Reports' },
+const Sidebar = ({ activeMainNav, setActiveMainNav, setActiveSubNav, setActivePage }) => {
+  const mainNavItems = [
+    { icon: 'fas fa-chart-pie', label: 'Business Dashboards', nav: 'dashboard' },
+    { icon: 'fas fa-users', label: 'Leads', nav: 'leads' },
+    { icon: 'fas fa-cogs', label: 'Operations', nav: 'operations' },
+    { icon: 'fas fa-chart-bar', label: 'Reports', nav: 'reports' },
   ];
+
+  const handleMainNavClick = (nav) => {
+    setActiveMainNav(nav);
+    
+    if (nav === 'operations') {
+      // Set default to Revenue → Customers when switching to Operations
+      setActiveSubNav('revenue');
+      setActivePage('customers');
+    } else {
+      // Reset for other sections
+      setActiveSubNav('');
+      setActivePage('');
+    }
+  };
 
   return (
     <aside className="sidebar">
       <div className="sidebar-icons">
-        {menuItems.map((item, index) => (
+        {mainNavItems.map((item, index) => (
           <div key={index} className="sidebar-icon-container">
             <button 
-              className={`sidebar-icon ${activeTab === item.tab ? 'active' : ''}`}
-              onClick={() => setActiveTab(item.tab)}
+              className={`sidebar-icon ${activeMainNav === item.nav ? 'active' : ''}`}
+              onClick={() => handleMainNavClick(item.nav)}
             >
               <i className={item.icon}></i>
             </button>

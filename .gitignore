@@ -52,3 +52,12 @@ Thumbs.db
 *.tmp
 *.temp
 EOF
+
+
+*.mp4
+*test.html
+indtest.html
+zip.html
+
+db.sqlite3
+.git/
