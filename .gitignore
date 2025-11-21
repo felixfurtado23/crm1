@@ -28,10 +28,7 @@ json_data/
 *.json
 data/
 
-# Environment
-.env
-.env.local
-.env.production
+
 
 # IDE
 .vscode/
