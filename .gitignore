@@ -23,7 +23,10 @@ venv/
 staticfiles/
 
 # Data files (CRITICAL - never commit these)
-
+merzaai/json/
+json_data/
+*.json
+data/
 
 # Environment
 .env
