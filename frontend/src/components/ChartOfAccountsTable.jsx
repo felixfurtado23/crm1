@@ -5,7 +5,7 @@ const ChartOfAccountsTable = ({ accounts, onAccountUpdate }) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [modalType, setModalType] = useState('view');
-  const API_BASE_URL = '';
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   const getAccountTypeColor = (type) => {
     const colors = {

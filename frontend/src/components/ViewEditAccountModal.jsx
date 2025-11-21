@@ -4,7 +4,7 @@ const ViewEditAccountModal = ({ account, type, onClose, onSave }) => {
   const isView = type === 'view';
   const [formData, setFormData] = useState({});
   const accountTypes = ['Asset', 'Liability', 'Equity', 'Income', 'Expense'];
-  const API_BASE_URL = '';
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
     if (account) {

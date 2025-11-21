@@ -48,7 +48,7 @@ const handleSubmit = async (e) => {
 
     console.log('Sending customer data:', dataToSend); // Add this debug line
 
-    const response = await fetch('/api/customers/edit/', {
+    const response = await fetch('http://localhost:8000/api/customers/edit/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

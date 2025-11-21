@@ -29,7 +29,7 @@ const Dashboard = () => {
 
   const [loading, setLoading] = useState(true);
 
-  const API_BASE_URL = "";
+  const API_BASE_URL = "http://localhost:8000";
 
   useEffect(() => {
     fetchDashboardData();

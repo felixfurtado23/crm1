@@ -6,7 +6,14 @@ const LeadsTable = () => {
   const [leads, setLeads] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [loading, setLoading] = useState(true);
-  const API_BASE_URL = '';
+  // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  console.log('=== ENV DEBUG ===');
+console.log('import.meta.env:', import.meta.env);
+console.log('VITE_API_BASE_URL:', import.meta.env.VITE_API_BASE_URL);
+console.log('typeof:', typeof import.meta.env.VITE_API_BASE_URL);
+console.log('API_BASE_URL value:', API_BASE_URL);
+console.log('=== END DEBUG ===');
 
   useEffect(() => {
     const fetchLeads = async () => {

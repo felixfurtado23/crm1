@@ -4,7 +4,7 @@ import ViewEditInvoiceModal from './ViewEditInvoiceModal';
 const InvoiceRow = ({ invoice }) => {
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('view');
-  const API_BASE_URL = '';
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   const getStatusClass = (status) => {
     const statusMap = {

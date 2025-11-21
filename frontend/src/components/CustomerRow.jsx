@@ -4,7 +4,7 @@ import ViewEditCustomerModal from "./ViewEditCustomerModal";
 const CustomerRow = ({ customer }) => {
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState("view");
-  const API_BASE_URL = '';
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   const handleAction = async (action) => {
     if (action === "view" || action === "edit") {
