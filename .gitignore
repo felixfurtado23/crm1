@@ -55,9 +55,13 @@ EOF
 
 
 *.mp4
+
+# Media files
+# Test files
 *test.html
 indtest.html
 zip.html
 
+# Development files
 db.sqlite3
 .git/
