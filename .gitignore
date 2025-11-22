@@ -51,12 +51,10 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp
-EOF
-
-
-*.mp4
 
 # Media files
+*.mp4
+
 # Test files
 *test.html
 indtest.html
@@ -66,4 +64,6 @@ zip.html
 db.sqlite3
 .git/
 
+# Settings
 settings.py
+EOF
