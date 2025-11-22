@@ -28,7 +28,10 @@ json_data/
 *.json
 data/
 
-
+# Environment
+.env
+.env.local
+.env.production
 
 # IDE
 .vscode/
@@ -62,3 +65,5 @@ zip.html
 # Development files
 db.sqlite3
 .git/
+
+settings.py

@@ -125,7 +125,7 @@ const generatePDF = (isCustom = false) => {
   const customer = isCustom ? customInvoiceData : customers.find(c => c.id == formData.customer);
 
   // Test the image URLs first
-  const logoUrl = "https://merzaai.com/wp-content/uploads/2025/07/Merzaai-logo-1-1.png";
+  const logoUrl = "images/Vintage Colorful Retro Vibes Typographic Product Brand Logo (6).png";
   const signatureUrl = "https://www.freepnglogos.com/uploads/signature-png/gary-vaynerchuk-signature-0.png";
   const stampUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ01OD98xvgcOPmQl87qxNgx-pyNdNq40YNTw&s";
 
