@@ -6,7 +6,7 @@ const ChartOfAccounts = () => {
   const [accounts, setAccounts] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [loading, setLoading] = useState(true);
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  const API_BASE_URL = 'http://localhost:8000';
 
   useEffect(() => {
     fetchAccounts();
@@ -41,8 +41,11 @@ const addAccount = (newAccount) => {
     <>
       {/* Page Header */}
       <div className="page-header">
-        <div className="page-title">Chart of Accounts</div>
-        <button className="btn" onClick={() => setShowAddModal(true)}>
+        <div className="page-title-section">
+          <h1 className="page-title">Chart of Accounts</h1>
+        <p className="page-subtitle">Organize and maintain your company's financial account structure</p>
+        </div>
+        <button className="page-header-btn" onClick={() => setShowAddModal(true)}>
           <i className="fas fa-plus"></i> Add Account
         </button>
       </div>

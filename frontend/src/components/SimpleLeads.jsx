@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 const SimpleLeads = () => {
   const [leads, setLeads] = useState([]);
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  const API_BASE_URL = 'http://localhost:8000';
 
   useEffect(() => {
     const fetchLeads = async () => {

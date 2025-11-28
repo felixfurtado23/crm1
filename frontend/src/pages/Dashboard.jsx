@@ -29,7 +29,7 @@ const Dashboard = () => {
 
   const [loading, setLoading] = useState(true);
 
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  const API_BASE_URL = "http://localhost:8000";
 
   useEffect(() => {
     fetchDashboardData();
@@ -174,7 +174,7 @@ const Dashboard = () => {
               <i className="fas fa-file-invoice-dollar text-muted"></i>
             </div>
             <div className="value">
-              ${metrics.outstandingInvoices.toLocaleString()}
+              AED {metrics.outstandingInvoices.toLocaleString()}
             </div>
             <div className="label">From Accounting Module</div>
             <div className={`trend ${cashTrend.class}`}>
@@ -194,7 +194,7 @@ const Dashboard = () => {
               <i className="fas fa-money-bill-wave"></i>
             </div>
             <div className="value">
-              ${metrics.cashReceivedMTD.toLocaleString()}
+              AED {metrics.cashReceivedMTD.toLocaleString()}
             </div>
             <div className="label">Month-to-Date from Accounting</div>
             <div className={`trend ${cashTrend.class}`}>
@@ -247,13 +247,13 @@ const Dashboard = () => {
               <div className="balance-value">
                 <div className="label">Current Month</div>
                 <div className="amount">
-                  ${charts.salesTrendData[2]?.toLocaleString() || "0"}
+                  AED {charts.salesTrendData[2]?.toLocaleString() || "0"}
                 </div>
               </div>
               <div className="balance-value">
                 <div className="label">Previous Month</div>
                 <div className="amount">
-                  ${charts.salesTrendData[1]?.toLocaleString() || "0"}
+                  AED {charts.salesTrendData[1]?.toLocaleString() || "0"}
                 </div>
               </div>
             </div>
@@ -298,13 +298,13 @@ const Dashboard = () => {
               <div className="balance-value">
                 <div className="label">Current Month</div>
                 <div className="amount">
-                  ${charts.collectionTrendData[2]?.toLocaleString() || "0"}
+                  AED{charts.collectionTrendData[2]?.toLocaleString() || "0"}
                 </div>
               </div>
               <div className="balance-value">
                 <div className="label">Previous Month</div>
                 <div className="amount">
-                  ${charts.collectionTrendData[1]?.toLocaleString() || "0"}
+                  AED {charts.collectionTrendData[1]?.toLocaleString() || "0"}
                 </div>
               </div>
             </div>
@@ -334,7 +334,7 @@ const Dashboard = () => {
                 }}
               >
                 <span>Avg. Invoice Value</span>
-                <strong>${quickStats.avgInvoiceValue}</strong>
+                <strong>AED {quickStats.avgInvoiceValue}</strong>
               </div>
               <div
                 style={{
@@ -415,7 +415,7 @@ const Dashboard = () => {
                         <td>{invoice.number}</td>
                         <td>{invoice.customer}</td>
                         <td>
-                          ${parseFloat(invoice.total || 0).toLocaleString()}
+                          AED {parseFloat(invoice.total || 0).toLocaleString()}
                         </td>
                         <td>
                           <span
@@ -476,13 +476,13 @@ const Dashboard = () => {
               <div className="balance-value">
                 <div className="label">Total Sales (MTD)</div>
                 <div className="amount">
-                  ${metrics.salesMTD.toLocaleString()}
+                  AED {metrics.salesMTD.toLocaleString()}
                 </div>
               </div>
               <div className="balance-value">
                 <div className="label">Total Receivables (ex-VAT)</div>
                 <div className="amount" style={{ textAlign: "right" }}>
-                  $
+                  AED 
                   {receivableExVat.toLocaleString(undefined, {
                     maximumFractionDigits: 2,
                   })}
@@ -493,14 +493,14 @@ const Dashboard = () => {
               <div className="balance-value">
                 <div className="label">Cash Collected (MTD)</div>
                 <div className="amount">
-                  ${metrics.cashReceivedMTD.toLocaleString()}
+                  AED {metrics.cashReceivedMTD.toLocaleString()}
                 </div>
               </div>
               <div className="balance-value">
                 <div className="label">VAT Amount (5%)</div>
                 <div className="amount">
-                  $
-                  {taxAmount.toLocaleString(undefined, {
+                  AED 
+                   {taxAmount.toLocaleString(undefined, {
                     maximumFractionDigits: 2,
                   })}
                 </div>

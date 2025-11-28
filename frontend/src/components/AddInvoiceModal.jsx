@@ -21,7 +21,7 @@ const AddInvoiceModal = ({ onClose, onSave }) => {
     address: '',
     trnNumber: ''
   });
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  const API_BASE_URL = 'http://localhost:8000';
 
   useEffect(() => {
     const fetchCustomers = async () => {
@@ -125,7 +125,7 @@ const generatePDF = (isCustom = false) => {
   const customer = isCustom ? customInvoiceData : customers.find(c => c.id == formData.customer);
 
   // Test the image URLs first
-  const logoUrl = "images/Vintage Colorful Retro Vibes Typographic Product Brand Logo (6).png";
+  const logoUrl = "https://merzaai.com/wp-content/uploads/2025/07/Merzaai-logo-1-1.png";
   const signatureUrl = "https://www.freepnglogos.com/uploads/signature-png/gary-vaynerchuk-signature-0.png";
   const stampUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ01OD98xvgcOPmQl87qxNgx-pyNdNq40YNTw&s";
 
@@ -719,308 +719,327 @@ body {
 
   return (
     <div className="modal-overlay active" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h2 className="modal-title">
-            {showCustomInvoice ? 'Create Custom Invoice' : 'Create New Invoice'}
-          </h2>
-          <button className="modal-close" onClick={onClose}>
-            <i className="fas fa-times"></i>
-          </button>
-        </div>
-        
-        {/* Navigation Bar */}
-        <div className="invoice-type-nav" style={{ padding: '0 24px', marginBottom: '16px' }}>
-          <div className="modern-section-headings" style={{ marginBottom: '0' }}>
-            <button
-              type="button"
-              className={`modern-section-btn ${!showCustomInvoice ? 'active' : ''}`}
-              onClick={() => setShowCustomInvoice(false)}
-            >
-              <div className="section-icon-wrapper">
-                <i className="fas fa-users"></i>
-              </div>
-              <span className="section-label">Customer Invoice</span>
-            </button>
-            <button
-              type="button"
-              className={`modern-section-btn ${showCustomInvoice ? 'active' : ''}`}
-              onClick={() => setShowCustomInvoice(true)}
-            >
-              <div className="section-icon-wrapper">
-                <i className="fas fa-user-plus"></i>
-              </div>
-              <span className="section-label">Custom Invoice</span>
-            </button>
+  <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+
+    {/* 🔥 THEMED HEADER */}
+    <div className="modal-header ">
+      <div className="modal-title-section">
+        <h2 className="modal-title">
+          {showCustomInvoice ? 'Create Custom Invoice' : 'Create New Invoice'}
+        </h2>
+        <p className="modal-subtitle">
+          {showCustomInvoice ? 'Create invoice for a new customer' : 'Select existing customer and create invoice'}
+        </p>
+      </div>
+
+      <button className="modal-close" onClick={onClose}>
+        ×
+      </button>
+    </div>
+
+    {/* Navigation Bar */}
+    <div className="invoice-type-nav" >
+      <div className="modern-section-headings" style={{ marginBottom: '0' }}>
+        <button
+          type="button"
+          className={`modern-section-btn ${!showCustomInvoice ? 'active' : ''}`}
+          onClick={() => setShowCustomInvoice(false)}
+        >
+          <div className="section-icon-wrapper">
+            <i className="fas fa-users"></i>
           </div>
-        </div>
-
-        <div className="modal-body">
-          {showCustomInvoice ? (
-            // Custom Invoice Form
-            <form onSubmit={handleCustomInvoiceSubmit}>
-              <div className="form-group">
-                <label>Company Name *</label>
-                <input
-                  type="text"
-                  name="companyName"
-                  className="form-control"
-                  value={customInvoiceData.companyName}
-                  onChange={handleCustomInvoiceChange}
-                  placeholder="Enter company name"
-                  required
-                />
-              </div>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Contact Person *</label>
-                  <input
-                    type="text"
-                    name="contactPerson"
-                    className="form-control"
-                    value={customInvoiceData.contactPerson}
-                    onChange={handleCustomInvoiceChange}
-                    placeholder="Contact person name"
-                    required
-                  />
-                </div>
-                                  <div className="form-group">
-    <label>Title</label>
-    <input
-      type="text"
-      name="title"
-      className="form-control"
-      value={customInvoiceData.title}
-      onChange={handleCustomInvoiceChange}
-      placeholder="Job title/position"
-    />
-  </div>
-                <div className="form-group">
-                  <label>TRN Number</label>
-                  <input
-                    type="text"
-                    name="trnNumber"
-                    className="form-control"
-                    value={customInvoiceData.trnNumber}
-                    onChange={handleCustomInvoiceChange}
-                    placeholder="Tax Registration Number"
-                  />
-                </div>
-
-              </div>
-
-              
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Email</label>
-                  <input
-                    type="email"
-                    name="email"
-                    className="form-control"
-                    value={customInvoiceData.email}
-                    onChange={handleCustomInvoiceChange}
-                    placeholder="email@company.com"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Phone</label>
-                  <input
-                    type="tel"
-                    name="phone"
-                    className="form-control"
-                    value={customInvoiceData.phone}
-                    onChange={handleCustomInvoiceChange}
-                    placeholder="+971 XX XXX XXXX"
-                  />
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label>Address</label>
-                <textarea
-                  name="address"
-                  className="form-control"
-                  value={customInvoiceData.address}
-                  onChange={handleCustomInvoiceChange}
-                  placeholder="Full company address"
-                  rows="3"
-                />
-              </div>
-
-              {/* Line Items Section */}
-              <InvoiceLineItems 
-                formData={formData}
-                handleItemChange={handleItemChange}
-                addLineItem={addLineItem}
-                removeLineItem={removeLineItem}
-              />
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Invoice Date *</label>
-                  <input
-                    type="date"
-                    name="date"
-                    className="form-control"
-                    value={formData.date}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Due Date *</label>
-                  <input
-                    type="date"
-                    name="dueDate"
-                    className="form-control"
-                    value={formData.dueDate}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label>Status</label>
-                <select name="status" className="form-control" value={formData.status} onChange={handleChange}>
-                  <option value="draft">Draft</option>
-                  <option value="sent">Sent</option>
-                  <option value="paid">Paid</option>
-                </select>
-              </div>
-            </form>
-          ) : (
-            // Regular Customer Invoice Form
-            <form onSubmit={handleSubmit}>
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Customer *</label>
-                  <select 
-                    name="customer" 
-                    className="form-control" 
-                    value={formData.customer} 
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="">Select Customer</option>
-                    {customers.map(customer => (
-                      <option key={customer.id} value={customer.id}>
-                        {customer.company} - {customer.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="form-group">
-                  <label>Invoice Number</label>
-                  <input 
-                    type="text" 
-                    className="form-control" 
-                    value={`INV-${Date.now().toString().slice(-4)}`} 
-                    readOnly 
-                  />
-                </div>
-              </div>
-              
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Invoice Date *</label>
-                  <input
-                    type="date"
-                    name="date"
-                    className="form-control"
-                    value={formData.date}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Due Date *</label>
-                  <input
-                    type="date"
-                    name="dueDate"
-                    className="form-control"
-                    value={formData.dueDate}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-              </div>
-
-              {/* Line Items Section */}
-              <InvoiceLineItems 
-                formData={formData}
-                handleItemChange={handleItemChange}
-                addLineItem={addLineItem}
-                removeLineItem={removeLineItem}
-              />
-
-              <div className="form-group">
-                <label>Status</label>
-                <select name="status" className="form-control" value={formData.status} onChange={handleChange}>
-                  <option value="draft">Draft</option>
-                  <option value="sent">Sent</option>
-                  <option value="paid">Paid</option>
-                </select>
-              </div>
-            </form>
-          )}
-
-          {/* Accounting Entry Section */}
-          <div className="accounting-entry">
-            <h4>Accounting Entry (Accrual Basis)</h4>
-            <table className="entry-table">
-              <thead>
-                <tr>
-                  <th>Account</th>
-                  <th>Debit (AED)</th>
-                  <th>Credit (AED)</th>
-                  <th>Description</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Accounts Receivable</td>
-                  <td>{total.toFixed(2)}</td>
-                  <td></td>
-                  <td>Record sale to customer</td>
-                </tr>
-                <tr>
-                  <td>Sales Revenue</td>
-                  <td></td>
-                  <td>{subtotal.toFixed(2)}</td>
-                  <td>Record sale to customer</td>
-                </tr>
-                <tr>
-                  <td>Output VAT Payable</td>
-                  <td></td>
-                  <td>{vat.toFixed(2)}</td>
-                  <td>Record VAT liability</td>
-                </tr>
-              </tbody>
-            </table>
+          <span className="section-label">Customer Invoice</span>
+        </button>
+        <button
+          type="button"
+          className={`modern-section-btn ${showCustomInvoice ? 'active' : ''}`}
+          onClick={() => setShowCustomInvoice(true)}
+        >
+          <div className="section-icon-wrapper">
+            <i className="fas fa-user-plus"></i>
           </div>
-        </div>
-        <div className="form-footer">
-  <button type="button" className="btn btn-outline" onClick={onClose}>Cancel</button>
-  <button 
-    type="submit" 
-    className="btn" 
-    onClick={showCustomInvoice ? handleCustomInvoiceSubmit : handleSubmit}
-  >
-    {showCustomInvoice ? 'Save Customer' : 'Save Invoice'}
-  </button>
-  <button 
-    type="button" 
-    className="btn btn-secondary"
-    onClick={() => generatePDF(showCustomInvoice)}
-  >
-    <i className="fas fa-download"></i> Download PDF
-  </button>
-</div>
+          <span className="section-label">Custom Invoice</span>
+        </button>
       </div>
     </div>
+
+    {/* BODY */}
+    <div className="invoice-modal-body">
+      {showCustomInvoice ? (
+        // Custom Invoice Form
+        <form onSubmit={handleCustomInvoiceSubmit}>
+
+         <div className="modal-form-section">
+                <h4>Custom Invoice</h4>
+          <div className="form-group">
+            <label>Company Name *</label>
+            <input
+              type="text"
+              name="companyName"
+              className="form-control"
+              value={customInvoiceData.companyName}
+              onChange={handleCustomInvoiceChange}
+              placeholder="Enter company name"
+              required
+            />
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label>Contact Person *</label>
+              <input
+                type="text"
+                name="contactPerson"
+                className="form-control"
+                value={customInvoiceData.contactPerson}
+                onChange={handleCustomInvoiceChange}
+                placeholder="Contact person name"
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Title</label>
+              <input
+                type="text"
+                name="title"
+                className="form-control"
+                value={customInvoiceData.title}
+                onChange={handleCustomInvoiceChange}
+                placeholder="Job title/position"
+              />
+            </div>
+            <div className="form-group">
+              <label>TRN Number</label>
+              <input
+                type="text"
+                name="trnNumber"
+                className="form-control"
+                value={customInvoiceData.trnNumber}
+                onChange={handleCustomInvoiceChange}
+                placeholder="Tax Registration Number"
+              />
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label>Email</label>
+              <input
+                type="email"
+                name="email"
+                className="form-control"
+                value={customInvoiceData.email}
+                onChange={handleCustomInvoiceChange}
+                placeholder="email@company.com"
+              />
+            </div>
+            <div className="form-group">
+              <label>Phone</label>
+              <input
+                type="tel"
+                name="phone"
+                className="form-control"
+                value={customInvoiceData.phone}
+                onChange={handleCustomInvoiceChange}
+                placeholder="+971 XX XXX XXXX"
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label>Address</label>
+            <textarea
+              name="address"
+              className="form-control"
+              value={customInvoiceData.address}
+              onChange={handleCustomInvoiceChange}
+              placeholder="Full company address"
+              rows="3"
+            />
+          </div>
+
+          {/* Line Items Section */}
+          <InvoiceLineItems 
+            formData={formData}
+            handleItemChange={handleItemChange}
+            addLineItem={addLineItem}
+            removeLineItem={removeLineItem}
+          />
+
+          <div className="form-row">
+            <div className="form-group">
+              <label>Invoice Date *</label>
+              <input
+                type="date"
+                name="date"
+                className="form-control"
+                value={formData.date}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Due Date *</label>
+              <input
+                type="date"
+                name="dueDate"
+                className="form-control"
+                value={formData.dueDate}
+                onChange={handleChange}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label>Status</label>
+            <select name="status" className="form-control" value={formData.status} onChange={handleChange}>
+              <option value="draft">Draft</option>
+              <option value="sent">Sent</option>
+              <option value="paid">Paid</option>
+            </select>
+          </div>
+
+          </div>
+        </form>
+      ) : (
+        // Regular Customer Invoice Form
+        <form onSubmit={handleSubmit}>
+
+                 <div className="modal-form-section">
+                <h4>Customer Invoice</h4>
+          <div className="form-row">
+            <div className="form-group">
+              <label>Customer *</label>
+              <select 
+                name="customer" 
+                className="form-control" 
+                value={formData.customer} 
+                onChange={handleChange}
+                required
+              >
+                <option value="">Select Customer</option>
+                {customers.map(customer => (
+                  <option key={customer.id} value={customer.id}>
+                    {customer.company} - {customer.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="form-group">
+              <label>Invoice Number</label>
+              <input 
+                type="text" 
+                className="form-control" 
+                value={`INV-${Date.now().toString().slice(-4)}`} 
+                readOnly 
+              />
+            </div>
+          </div>
+          
+          <div className="form-row">
+            <div className="form-group">
+              <label>Invoice Date *</label>
+              <input
+                type="date"
+                name="date"
+                className="form-control"
+                value={formData.date}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Due Date *</label>
+              <input
+                type="date"
+                name="dueDate"
+                className="form-control"
+                value={formData.dueDate}
+                onChange={handleChange}
+                required
+              />
+            </div>
+          </div>
+
+          {/* Line Items Section */}
+          <InvoiceLineItems 
+            formData={formData}
+            handleItemChange={handleItemChange}
+            addLineItem={addLineItem}
+            removeLineItem={removeLineItem}
+          />
+
+          <div className="form-group">
+            <label>Status</label>
+            <select name="status" className="form-control" value={formData.status} onChange={handleChange}>
+              <option value="draft">Draft</option>
+              <option value="sent">Sent</option>
+              <option value="paid">Paid</option>
+            </select>
+          </div>
+
+          </div>
+        </form>
+      )}
+
+      {/* Accounting Entry Section */}
+      <div className="accounting-entry">
+        <h4>Accounting Entry (Accrual Basis)</h4>
+        <table className="entry-table">
+          <thead>
+            <tr>
+              <th>Account</th>
+              <th>Debit (AED)</th>
+              <th>Credit (AED)</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Accounts Receivable</td>
+              <td>{total.toFixed(2)}</td>
+              <td></td>
+              <td>Record sale to customer</td>
+            </tr>
+            <tr>
+              <td>Sales Revenue</td>
+              <td></td>
+              <td>{subtotal.toFixed(2)}</td>
+              <td>Record sale to customer</td>
+            </tr>
+            <tr>
+              <td>Output VAT Payable</td>
+              <td></td>
+              <td>{vat.toFixed(2)}</td>
+              <td>Record VAT liability</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    {/* 🔥 NEW THEMED FOOTER */}
+    <div className="modal-footer">
+      <button className="modal-btn secondary" onClick={onClose}>
+        Cancel
+      </button>
+      <button 
+        className="modal-btn" 
+        onClick={showCustomInvoice ? handleCustomInvoiceSubmit : handleSubmit}
+      >
+        {showCustomInvoice ? 'Save Customer' : 'Save Invoice'}
+      </button>
+      <button 
+        className="modal-btn secondary" 
+        onClick={() => generatePDF(showCustomInvoice)}
+      >
+        <i className="fas fa-download"></i> Download PDF
+      </button>
+    </div>
+
+  </div>
+</div>
   );
 };
 

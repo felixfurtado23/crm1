@@ -1,19 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import LeadRow from './LeadRow';
 import AddLeadModal from './AddLeadModal';
+import UniversalTableHeader from './UniversalTableHeader'; // Import the component
 
 const LeadsTable = () => {
   const [leads, setLeads] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [loading, setLoading] = useState(true);
-  // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-  console.log('=== ENV DEBUG ===');
-console.log('import.meta.env:', import.meta.env);
-console.log('VITE_API_BASE_URL:', import.meta.env.VITE_API_BASE_URL);
-console.log('typeof:', typeof import.meta.env.VITE_API_BASE_URL);
-console.log('API_BASE_URL value:', API_BASE_URL);
-console.log('=== END DEBUG ===');
+  const API_BASE_URL = 'http://localhost:8000';
 
   useEffect(() => {
     const fetchLeads = async () => {
@@ -29,12 +23,24 @@ console.log('=== END DEBUG ===');
     };
 
     fetchLeads();
-    
   }, []);
 
   const addLead = (newLead) => {
     setLeads([...leads, { ...newLead, id: Date.now() }]);
     setShowAddModal(false);
+  };
+
+  // Calculate lead statistics for the header
+  const leadStats = [
+    { value: leads.length, label: 'Total Leads' },
+    { value: leads.filter(lead => lead.status === 'New').length, label: 'New' },
+    { value: leads.filter(lead => lead.status === 'Contacted').length, label: 'Contacted' },
+    { value: leads.filter(lead => lead.status === 'Qualified').length, label: 'Qualified' }
+  ];
+
+  const handleExport = () => {
+    // Export logic here
+    console.log('Export leads clicked');
   };
 
   if (loading) {
@@ -43,17 +49,27 @@ console.log('=== END DEBUG ===');
 
   return (
     <>
-      <div className="data-table-container">
-        <div className="page-header">
+
+      <div className="page-header">
+        <div className="page-title-section">
           <div className="page-title">Leads Management</div>
-          <button className="btn" onClick={() => setShowAddModal(true)}>
-            <i className="fas fa-plus"></i> Add New Lead
-          </button>
+          <p className="page-subtitle">Manage customer relationships and track business interactions</p>
         </div>
+        <button className="page-header-btn" onClick={() => setShowAddModal(true)}>
+          <i className="fas fa-plus"></i> Add Customer
+        </button>
+      </div>
+      <div className="data-table-container">
+        {/* Add UniversalTableHeader */}
+        <UniversalTableHeader
+          stats={leadStats}
+          onExport={handleExport}
+        />
 
         <table className="data-table">
           <thead>
             <tr>
+              <th>Lead ID</th>
               <th>Lead Name</th>
               <th>Company</th>
               <th>Contact Info</th>

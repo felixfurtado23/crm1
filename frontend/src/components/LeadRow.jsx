@@ -4,7 +4,7 @@ import ViewEditModal from './ViewEditModal';
 const LeadRow = ({ lead }) => {
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('view');
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  const API_BASE_URL = 'http://localhost:8000';
 
   const getStatusClass = (status) => {
     const statusMap = {
@@ -69,9 +69,16 @@ const convertLeadToCustomer = async () => {
     }
   };
 
+  const formatId = (id) => {
+    return `LD-${String(id).padStart(4, '0')}`;
+  };
+
   return (
     <>
       <tr>
+      <td>
+          <div className="lead-id">{formatId(lead.id)}</div>
+        </td>
         <td>
           <div className="lead-name">{lead.name}</div>
           <div className="company-name">{lead.company}</div>

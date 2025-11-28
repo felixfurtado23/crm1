@@ -4,7 +4,7 @@ import ViewEditCustomerModal from "./ViewEditCustomerModal";
 const CustomerRow = ({ customer }) => {
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState("view");
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  const API_BASE_URL = 'http://localhost:8000';
 
   const handleAction = async (action) => {
     if (action === "view" || action === "edit") {
@@ -36,10 +36,16 @@ const CustomerRow = ({ customer }) => {
       alert('Error deleting customer');
     }
   };
-
+const formatId = (id) => {
+    return `CS-${String(id).padStart(4, '0')}`;
+  };
   return (
     <>
       <tr>
+
+      <td>
+          <div className="lead-id">{formatId(customer.id)}</div>
+        </td>
         <td>
           <div className="customer-name">{customer.name}</div>
           <div className="company-name">{customer.company}</div>
@@ -56,7 +62,8 @@ const CustomerRow = ({ customer }) => {
         </td>
         <td>
           <span className="status-badge status-won">
-            ${customer.totalAmount || "0"}
+            {/* Aed {customer.totalAmount || "0".toLocaleString()} */}
+            Aed{Number (customer.totalAmount || "0").toLocaleString()}
           </span>
         </td>
 

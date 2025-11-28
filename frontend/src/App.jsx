@@ -6,7 +6,14 @@ import Customers from './pages/Customers';
 import Invoicing from './pages/Invoicing';
 import Dashboard from './pages/Dashboard';
 import Reports from './pages/Reports';
-import ChartOfAccounts from './pages/ChartOfAccounts'; // Add this import
+import ChartOfAccounts from './pages/ChartOfAccounts';
+import ManualJournals from './pages/ManualJournals'; 
+import Vendors from './pages/Vendors';
+import ExpensesInput from './pages/ExpensesInput';
+import PDFInvoiceProcessing from './pages/PDFInvoiceProcessing';
+import InventoryManagement from './pages/InventoryManagement'; 
+import Payroll from './pages/Payroll'; 
+import AIChatbot from './pages/AIChatbot';
 import './styles.css';
 
 function App() {
@@ -42,6 +49,12 @@ function App() {
         case 'accounting':
           defaultPage = 'chart-of-accounts';
           break;
+        case 'inventory':
+          defaultPage = 'inventory';
+          break;
+        case 'payroll': 
+          defaultPage = 'payroll';
+          break;
         default:
           defaultPage = '';
       }
@@ -65,7 +78,8 @@ function App() {
     if (activeMainNav === 'dashboard') return <Dashboard />;
     if (activeMainNav === 'reports') return <Reports />;
     if (activeMainNav === 'leads') return <Leads />;
-    if (activeMainNav === 'chart-of-accounts') return <ChartOfAccounts />; // Add this line
+    if (activeMainNav === 'pdf-invoices') return <PDFInvoiceProcessing />;
+    if (activeMainNav === 'ai-chatbot') return <AIChatbot />;
     
     // Operations pages
     if (activeMainNav === 'operations') {
@@ -75,22 +89,32 @@ function App() {
         case 'invoicing':
           return <Invoicing />;
         case 'vendors':
-          return <div className="page-placeholder">Vendors Page - Coming Soon</div>;
+          return <Vendors />;
         case 'expense-input':
-          return <div className="page-placeholder">Expense Input Page - Coming Soon</div>;
+          return <ExpensesInput />;
+        case 'expenses-invoice': 
+          return <PDFInvoiceProcessing/>;
         case 'chart-of-accounts':
           return <ChartOfAccounts />;
         case 'manual-journals':
-          return <div className="page-placeholder">Manual Journals Page - Coming Soon</div>;
+          return <ManualJournals />; 
+        case 'inventory':
+          return <InventoryManagement />;
+        case 'payroll': // Add payroll case
+          return <Payroll />;
         default:
           // Show default page based on activeSubNav
           switch (activeSubNav) {
             case 'revenue':
               return <Customers />;
             case 'expenses':
-              return <div className="page-placeholder">Vendors Page - Coming Soon</div>;
+              return <Vendors />;
             case 'accounting':
               return <ChartOfAccounts />;
+            case 'inventory':
+              return <InventoryManagement />;
+            case 'payroll': // Add payroll case
+              return <Payroll />;
             default:
               return <div className="page-placeholder">Select a section from Operations</div>;
           }

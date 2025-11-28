@@ -4,7 +4,7 @@ import ViewEditInvoiceModal from './ViewEditInvoiceModal';
 const InvoiceRow = ({ invoice }) => {
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('view');
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  const API_BASE_URL = 'http://localhost:8000';
 
   const getStatusClass = (status) => {
     const statusMap = {
@@ -93,11 +93,12 @@ const InvoiceRow = ({ invoice }) => {
   return (
     <>
       <tr>
-        <td>{invoice.number}</td>
+          <td ><div className="lead-id">{invoice.number}</div>
+        </td>
         <td>{formatCustomerDisplay()}</td>
         <td>{invoice.date}</td>
         <td>{invoice.dueDate}</td>
-        <td>${invoice.total}</td>
+        <td>Aed {Number(invoice.total).toLocaleString()}</td>
         <td>
           <span className={`status-badge ${getStatusClass(invoice.status)}`}>
             {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import InvoiceRow from './InvoiceRow';
 import AddInvoiceModal from './AddInvoiceModal';
+import UniversalTableHeader from './UniversalTableHeader';
 
 const InvoicesTable = () => {
   const [invoices, setInvoices] = useState([]);
@@ -11,7 +12,7 @@ const InvoicesTable = () => {
   });
   const [showAddModal, setShowAddModal] = useState(false);
   const [loading, setLoading] = useState(true);
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  const API_BASE_URL = 'http://localhost:8000';
 
   useEffect(() => {
     const fetchData = async () => {
@@ -55,44 +56,43 @@ const InvoicesTable = () => {
   // Calculate VAT Amount (5% of total receivables)
   const vatAmount = summary.totalReceivables * 0.05;
 
+  // Invoice statistics for the header - using the summary fields
+  const invoiceStats = [
+    { value: `AED ${summary.totalSales.toLocaleString()}`, label: 'Total Sales' },
+    { value: `AED ${summary.totalCashCollected.toLocaleString()}`, label: 'Cash Collected' },
+    { value: `AED ${vatAmount.toLocaleString(undefined, { maximumFractionDigits: 2 })}`, label: 'VAT (5%)' },
+    { value: `AED ${summary.totalReceivables.toLocaleString()}`, label: 'Receivables' }
+  ];
+
+  const handleExport = () => {
+    // Export logic here
+    console.log('Export invoices clicked');
+  };
+
   if (loading) {
     return <div>Loading invoices...</div>;
   }
 
   return (
     <>
-      {/* Invoice Summary */}
-      <div className="invoice-summary">
-        <div className="summary-grid">
-          <div className="summary-card total">
-            <div className="summary-value">${summary.totalSales.toLocaleString()}</div>
-            <div className="summary-label">Total Sales</div>
-          </div>
-          <div className="summary-card total">
-            <div className="summary-value">${summary.totalCashCollected.toLocaleString()}</div>
-            <div className="summary-label">Total Cash Collected</div>
-          </div>
-          <div className="summary-card total">
-            <div className="summary-value">${vatAmount.toLocaleString(undefined, { maximumFractionDigits: 2 })}</div>
-            <div className="summary-label">VAT Amount (5%)</div>
-          </div>
-          <div className="summary-card total">
-            <div className="summary-value">${summary.totalReceivables.toLocaleString()}</div>
-            <div className="summary-label">Total Receivables</div>
-          </div>
-        </div>
-      </div>
-
       {/* Page Header */}
       <div className="page-header">
-        <div className="page-title">Invoice Management</div>
-        <button className="btn" onClick={() => setShowAddModal(true)}>
+        <div className="page-title-section">
+          <h1 className="page-title">Invoice Management</h1>
+          <p className="page-subtitle">Manage and track customer invoices and payments</p>
+        </div>
+        <button className="page-header-btn" onClick={() => setShowAddModal(true)}>
           <i className="fas fa-plus"></i> Create Invoice
         </button>
       </div>
 
       {/* Invoices Table */}
       <div className="data-table-container">
+        <UniversalTableHeader
+          stats={invoiceStats}
+          onExport={handleExport}
+        />
+
         <table className="data-table">
           <thead>
             <tr>
@@ -111,6 +111,20 @@ const InvoicesTable = () => {
             ))}
           </tbody>
         </table>
+
+        {invoices.length === 0 && (
+          <div className="data-empty-state">
+            <i className="fas fa-file-invoice data-empty-icon"></i>
+            <h3>No Invoices Found</h3>
+            <p>Get started by creating your first invoice</p>
+            <div className="data-empty-actions">
+              <button className="btn" onClick={() => setShowAddModal(true)}>
+                <i className="fas fa-plus"></i>
+                Create Invoice
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {showAddModal && (

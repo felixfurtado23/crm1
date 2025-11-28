@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const AddLeadModal = ({ onClose, onSave }) => {
+const AddVendorModal = ({ onClose, onSave }) => {
   const [formData, setFormData] = useState({
     name: '',
     company: '',
@@ -8,48 +8,14 @@ const AddLeadModal = ({ onClose, onSave }) => {
     email: '',
     phone: '',
     address: '',
-    source: '',
-    status: 'new',
     addedDate: '',
-    lastContact: '',
-    industry: '',
-    annualRevenue: '',
-    notes: ''
+    notes: '',
+    totalBills: 0,
+    totalAmount: 0,
+    bills: []
   });
 
   const API_BASE_URL = 'http://localhost:8000';
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!formData.name || !formData.company) {
-      alert('Please fill in all required fields');
-      return;
-    }
-
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/leads/add/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-      
-      if (response.ok) {
-        const savedLead = await response.json();
-        console.log('Lead added successfully:', savedLead);
-        alert('Lead added successfully!');
-        onSave(savedLead);
-        onClose();
-        window.location.reload();
-      } else {
-        alert('Error adding lead');
-      }
-    } catch (error) {
-      console.error('Error adding lead:', error);
-      alert('Error adding lead');
-    }
-  };
 
   const handleChange = (e) => {
     setFormData({
@@ -58,20 +24,62 @@ const AddLeadModal = ({ onClose, onSave }) => {
     });
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!formData.name || !formData.company) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/vendors/add/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        const savedVendor = await response.json();
+        console.log('Vendor added successfully:', savedVendor);
+        alert('Vendor added successfully!');
+        onSave(savedVendor);
+        onClose();
+        window.location.reload();
+      } else {
+        alert('Error adding vendor');
+      }
+    } catch (error) {
+      console.error('Error adding vendor:', error);
+      alert('Error adding vendor');
+    }
+  };
+
   return (
     <div className="modal-overlay active" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h2 className="modal-title">Add New Lead</h2>
+         <div className="modal-header">
+          <div className="modal-title-section">
+            <h2 className="modal-title">Add Customer</h2>
+            <p className="modal-subtitle">Fill the details to add a new customer</p>
+          </div>
+
           <button className="modal-close" onClick={onClose}>
-            <i className="fas fa-times"></i>
+            ×
           </button>
         </div>
+
         <div className="modal-body">
           <form onSubmit={handleSubmit}>
+
+            <div className="modal-form-section">
+                <h4>Vendor Information</h4>
+
             <div className="form-row">
               <div className="form-group">
-                <label>Full Name *</label>
+                <label>Vendor Name *</label>
                 <input
                   type="text"
                   name="name"
@@ -81,8 +89,9 @@ const AddLeadModal = ({ onClose, onSave }) => {
                   required
                 />
               </div>
+
               <div className="form-group">
-                <label>Company *</label>
+                <label>Company Name *</label>
                 <input
                   type="text"
                   name="company"
@@ -105,18 +114,20 @@ const AddLeadModal = ({ onClose, onSave }) => {
                   onChange={handleChange}
                 />
               </div>
+
               <div className="form-group">
-                <label>Industry</label>
+                <label>Added Date</label>
                 <input
                   type="text"
-                  name="industry"
+                  name="addedDate"
                   className="form-control"
-                  value={formData.industry}
+                  value={formData.addedDate}
                   onChange={handleChange}
+                  placeholder="e.g., May 15, 2023"
                 />
               </div>
             </div>
-            
+
             <div className="form-row">
               <div className="form-group">
                 <label>Email Address</label>
@@ -128,6 +139,7 @@ const AddLeadModal = ({ onClose, onSave }) => {
                   onChange={handleChange}
                 />
               </div>
+
               <div className="form-group">
                 <label>Phone Number</label>
                 <input
@@ -136,6 +148,33 @@ const AddLeadModal = ({ onClose, onSave }) => {
                   className="form-control"
                   value={formData.phone}
                   onChange={handleChange}
+                />
+              </div>
+            </div>
+
+            <div className="form-row">
+              <div className="form-group">
+                <label>Total Bills</label>
+                <input
+                  type="number"
+                  name="totalBills"
+                  className="form-control"
+                  value={formData.totalBills}
+                  onChange={handleChange}
+                  min="0"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Total Amount</label>
+                <input
+                  type="number"
+                  name="totalAmount"
+                  className="form-control"
+                  value={formData.totalAmount}
+                  onChange={handleChange}
+                  min="0"
+                  step="0.01"
                 />
               </div>
             </div>
@@ -151,69 +190,7 @@ const AddLeadModal = ({ onClose, onSave }) => {
                 placeholder="Enter full address..."
               />
             </div>
-            
-            <div className="form-row">
-              <div className="form-group">
-                <label>Source</label>
-                <select name="source" className="form-control" value={formData.source} onChange={handleChange}>
-                  <option value="">Select source</option>
-                  <option value="Website">Website</option>
-                  <option value="Referral">Referral</option>
-                  <option value="Social Media">Social Media</option>
-                  <option value="Other">Other</option>
-                </select>
-              </div>
-              <div className="form-group">
-                <label>Status</label>
-                <select name="status" className="form-control" value={formData.status} onChange={handleChange}>
-                  <option value="new">New</option>
-                  <option value="contacted">Contacted</option>
-                  <option value="proposal">Proposal Sent</option>
-                  <option value="won">Won</option>
-                  <option value="lost">Lost</option>
-                </select>
-              </div>
-            </div>
 
-            <div className="form-row">
-              <div className="form-group">
-                <label>Added Date</label>
-                <input
-                  type="text"
-                  name="addedDate"
-                  className="form-control"
-                  value={formData.addedDate}
-                  onChange={handleChange}
-                  placeholder="e.g., May 15, 2023"
-                />
-              </div>
-              <div className="form-group">
-                <label>Last Contact</label>
-                <input
-                  type="text"
-                  name="lastContact"
-                  className="form-control"
-                  value={formData.lastContact}
-                  onChange={handleChange}
-                  placeholder="e.g., May 18, 2023"
-                />
-              </div>
-            </div>
-
-            <div className="form-group">
-              <label>Annual Revenue</label>
-              <select name="annualRevenue" className="form-control" value={formData.annualRevenue} onChange={handleChange}>
-                <option value="">Select revenue range</option>
-                <option value="$1M - $5M">$1M - $5M</option>
-                <option value="$5M - $10M">$5M - $10M</option>
-                <option value="$10M - $25M">$10M - $25M</option>
-                <option value="$25M - $50M">$25M - $50M</option>
-                <option value="$50M - $100M">$50M - $100M</option>
-                <option value="$100M - $250M">$100M - $250M</option>
-                <option value="$250M+">$250M+</option>
-              </select>
-            </div>
-            
             <div className="form-group">
               <label>Notes</label>
               <textarea
@@ -222,18 +199,26 @@ const AddLeadModal = ({ onClose, onSave }) => {
                 rows="4"
                 value={formData.notes}
                 onChange={handleChange}
-                placeholder="Enter any notes about the lead..."
+                placeholder="Enter any notes about the vendor..."
               />
             </div>
+
+            </div>
+
           </form>
         </div>
-        <div className="form-footer">
-          <button className="btn btn-outline" onClick={onClose}>Cancel</button>
-          <button className="btn" onClick={handleSubmit}>Save Lead</button>
+
+        <div className="modal-footer">
+          <button className="modal-btn secondary" onClick={onClose}>
+            Cancel
+          </button>
+          <button className="modal-btn" onClick={handleSubmit}>
+            Save Vendor
+          </button>
         </div>
       </div>
     </div>
   );
 };
 
-export default AddLeadModal;
+export default AddVendorModal;

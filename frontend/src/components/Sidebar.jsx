@@ -5,7 +5,9 @@ const Sidebar = ({ activeMainNav, setActiveMainNav, setActiveSubNav, setActivePa
     { icon: 'fas fa-chart-pie', label: 'Business Dashboards', nav: 'dashboard' },
     { icon: 'fas fa-users', label: 'Leads', nav: 'leads' },
     { icon: 'fas fa-cogs', label: 'Operations', nav: 'operations' },
+    { label: 'AI Assistant', nav: 'ai-chatbot', icon: 'fas fa-robot' },
     { icon: 'fas fa-chart-bar', label: 'Reports', nav: 'reports' },
+
   ];
 
   const handleMainNavClick = (nav) => {

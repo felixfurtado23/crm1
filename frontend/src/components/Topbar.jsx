@@ -7,13 +7,16 @@ const Topbar = ({ activeMainNav, activeSubNav, activePage, setActiveSubNav, setA
         return [
           { label: 'Revenue', nav: 'revenue', icon: 'fas fa-chart-line' },
           { label: 'Expenses', nav: 'expenses', icon: 'fas fa-receipt' },
-          { label: 'Accounting', nav: 'accounting', icon: 'fas fa-calculator' }
+          { label: 'Accounting', nav: 'accounting', icon: 'fas fa-calculator' },
+          { label: 'Inventory', nav: 'inventory', icon: 'fas fa-boxes' },
+          { label: 'Payroll WPS', nav: 'payroll', icon: 'fas fa-money-check' } 
+
         ];
       default:
         return [];
     }
   };
-
+ 
   const getLevel3Items = () => {
     switch (activeSubNav) {
       case 'revenue':
@@ -24,13 +27,27 @@ const Topbar = ({ activeMainNav, activeSubNav, activePage, setActiveSubNav, setA
       case 'expenses':
         return [
           { label: 'Vendors', page: 'vendors', icon: 'fas fa-truck' },
-          { label: 'Expense Input', page: 'expense-input', icon: 'fas fa-money-bill-wave' }
+          { label: 'Expense Input', page: 'expense-input', icon: 'fas fa-money-bill-wave' },
+          { label: 'Expenses Invoice', page: 'expenses-invoice', icon: 'fas fa-file-invoice-dollar' }
         ];
       case 'accounting':
         return [
           { label: 'Chart of Accounts', page: 'chart-of-accounts', icon: 'fas fa-sitemap' },
           { label: 'Manual Journals', page: 'manual-journals', icon: 'fas fa-book' }
         ];
+
+       case 'inventory': // Added Inventory level 3 items
+        return [
+          { label: 'Inventory Management', page: 'inventory', icon: 'fas fa-boxes' },
+        ];
+
+
+        case 'payroll': // Added Inventory level 3 items
+        return [
+          { label: 'Payroll WPS Management', page: 'payroll', icon: 'fas fa-money-check' },
+        ];
+
+       
       default:
         return [];
     }
@@ -51,6 +68,14 @@ const Topbar = ({ activeMainNav, activeSubNav, activePage, setActiveSubNav, setA
       case 'accounting':
         defaultPage = 'chart-of-accounts';
         break;
+
+      case 'inventory':
+        defaultPage = 'inventory';
+        break;
+
+      case 'payroll':
+  defaultPage = 'payroll';
+  break;
       default:
         defaultPage = '';
     }

@@ -10,7 +10,7 @@ const AddAccountModal = ({ onClose, onSave }) => {
   });
 
   const accountTypes = ['Asset', 'Liability', 'Equity', 'Income', 'Expense'];
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  const API_BASE_URL = 'http://localhost:8000';
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -54,15 +54,22 @@ const AddAccountModal = ({ onClose, onSave }) => {
   return (
     <div className="modal-overlay active" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h2 className="modal-title">Add New Account</h2>
+           <div className="modal-header">
+          <div className="modal-title-section">
+            <h2 className="modal-title">Add Account</h2>
+            <p className="modal-subtitle">Fill the required details</p>
+          </div>
+
           <button className="modal-close" onClick={onClose}>
-            <i className="fas fa-times"></i>
+            ×
           </button>
         </div>
         
         <div className="modal-body">
           <form onSubmit={handleSubmit}>
+
+            <div className="modal-form-section">
+                <h4>Vendor Account</h4>
             <div className="form-row">
               <div className="form-group">
                 <label>Account Code *</label>
@@ -132,6 +139,8 @@ const AddAccountModal = ({ onClose, onSave }) => {
                 placeholder="Account description..."
                 rows="3"
               />
+            </div>
+
             </div>
           </form>
         </div>

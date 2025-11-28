@@ -15,7 +15,7 @@ const AddCustomerModal = ({ onClose, onSave }) => {
     invoices: []
   });
 
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  const API_BASE_URL = 'http://localhost:8000';
 
   const handleChange = (e) => {
     setFormData({
@@ -26,6 +26,7 @@ const AddCustomerModal = ({ onClose, onSave }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!formData.name || !formData.company) {
       alert('Please fill in all required fields');
       return;
@@ -34,16 +35,12 @@ const AddCustomerModal = ({ onClose, onSave }) => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/customers/add/`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
-      
+
       if (response.ok) {
         const savedCustomer = await response.json();
-        console.log('Customer added successfully:', savedCustomer);
-        alert('Customer added successfully!');
         onSave(savedCustomer);
         onClose();
         window.location.reload();
@@ -59,14 +56,26 @@ const AddCustomerModal = ({ onClose, onSave }) => {
   return (
     <div className="modal-overlay active" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+
+        {/* 🔥 THEMED HEADER */}
         <div className="modal-header">
-          <h2 className="modal-title">Add New Customer</h2>
+          <div className="modal-title-section">
+            <h2 className="modal-title">Add Customer</h2>
+            <p className="modal-subtitle">Fill the details to add a new customer</p>
+          </div>
+
           <button className="modal-close" onClick={onClose}>
-            <i className="fas fa-times"></i>
+            ×
           </button>
         </div>
+
+        {/* BODY */}
         <div className="modal-body">
           <form onSubmit={handleSubmit}>
+
+          <div className="modal-form-section">
+                <h4>Customer Information</h4>
+            
             <div className="form-row">
               <div className="form-group">
                 <label>Customer Name *</label>
@@ -79,6 +88,7 @@ const AddCustomerModal = ({ onClose, onSave }) => {
                   required
                 />
               </div>
+
               <div className="form-group">
                 <label>Company Name *</label>
                 <input
@@ -103,6 +113,7 @@ const AddCustomerModal = ({ onClose, onSave }) => {
                   onChange={handleChange}
                 />
               </div>
+
               <div className="form-group">
                 <label>Added Date</label>
                 <input
@@ -115,7 +126,7 @@ const AddCustomerModal = ({ onClose, onSave }) => {
                 />
               </div>
             </div>
-            
+
             <div className="form-row">
               <div className="form-group">
                 <label>Email Address</label>
@@ -127,6 +138,7 @@ const AddCustomerModal = ({ onClose, onSave }) => {
                   onChange={handleChange}
                 />
               </div>
+
               <div className="form-group">
                 <label>Phone Number</label>
                 <input
@@ -151,6 +163,7 @@ const AddCustomerModal = ({ onClose, onSave }) => {
                   min="0"
                 />
               </div>
+
               <div className="form-group">
                 <label>Total Amount</label>
                 <input
@@ -164,7 +177,7 @@ const AddCustomerModal = ({ onClose, onSave }) => {
                 />
               </div>
             </div>
-            
+
             <div className="form-group">
               <label>Address</label>
               <textarea
@@ -188,16 +201,22 @@ const AddCustomerModal = ({ onClose, onSave }) => {
                 placeholder="Enter any notes about the customer..."
               />
             </div>
+
+            </div>
+
           </form>
         </div>
-        <div className="form-footer">
-          <button className="btn btn-outline" onClick={onClose}>
+
+        {/* 🔥 NEW THEMED FOOTER */}
+        <div className="modal-footer">
+          <button className="modal-btn secondary" onClick={onClose}>
             Cancel
           </button>
-          <button className="btn" onClick={handleSubmit}>
+          <button className="modal-btn" onClick={handleSubmit}>
             Save Customer
           </button>
         </div>
+
       </div>
     </div>
   );

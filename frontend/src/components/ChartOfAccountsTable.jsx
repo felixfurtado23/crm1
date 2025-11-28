@@ -5,7 +5,7 @@ const ChartOfAccountsTable = ({ accounts, onAccountUpdate }) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [modalType, setModalType] = useState('view');
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  const API_BASE_URL = 'http://localhost:8000';
 
   const getAccountTypeColor = (type) => {
     const colors = {
@@ -87,12 +87,12 @@ const ChartOfAccountsTable = ({ accounts, onAccountUpdate }) => {
               </td>
               <td>
                 <div className="action-buttons">
-                  <button 
+                  {/* <button 
                     className="action-btn view" 
                     onClick={() => handleAction('view', account)}
                   >
                     <i className="fas fa-eye"></i> 
-                  </button>
+                  </button> */}
                   <button 
                     className="action-btn edit" 
                     onClick={() => handleAction('edit', account)}
