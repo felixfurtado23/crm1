@@ -105,9 +105,9 @@ const handleSubmit = async (e) => {
         </div>
         <div className="modal-body">
           {isView ? (
-            <div className="client-detail">
-              <div className="client-info-section">
-                <h3>Personal Information</h3>
+            <div className="">
+               <div className="modal-form-section">
+                <h4>Personal Information</h4>
                 <div className="client-detail-item">
                   <div className="client-detail-label">Full Name</div>
                   <div className="client-detail-value">{lead.name}</div>
@@ -122,8 +122,9 @@ const handleSubmit = async (e) => {
                 </div>
               </div>
               
-              <div className="client-info-section">
-                <h3>Contact Information</h3>
+                             <div className="modal-form-section">
+
+                <h4>Contact Information</h4>
                 <div className="client-detail-item">
                   <div className="client-detail-label">Email</div>
                   <div className="client-detail-value">{lead.email}</div>
@@ -138,8 +139,9 @@ const handleSubmit = async (e) => {
                 </div>
               </div>
               
-              <div className="client-info-section">
-                <h3>Lead Information</h3>
+                             <div className="modal-form-section">
+
+                <h4>Lead Information</h4>
                 <div className="client-detail-item">
                   <div className="client-detail-label">Source</div>
                   <div className="client-detail-value">{lead.source}</div>
@@ -163,8 +165,9 @@ const handleSubmit = async (e) => {
                 </div>
               </div>
 
-              <div className="client-info-section">
-                <h3>Business Information</h3>
+                             <div className="modal-form-section">
+
+                <h4>Business Information</h4>
                 <div className="client-detail-item">
                   <div className="client-detail-label">Industry</div>
                   <div className="client-detail-value">{lead.industry}</div>
@@ -175,8 +178,9 @@ const handleSubmit = async (e) => {
                 </div>
               </div>
               
-              <div className="client-info-section client-notes">
-                <h3>Notes</h3>
+               <div className="modal-form-section client-notes">
+
+                <h4>Notes</h4>
                 <div className="client-notes-content">
                   {lead.notes}
                 </div>

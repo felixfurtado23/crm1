@@ -63,7 +63,7 @@ const formatId = (id) => {
         <td>
           <span className="status-badge status-won">
             {/* Aed {customer.totalAmount || "0".toLocaleString()} */}
-            Aed{Number (customer.totalAmount || "0").toLocaleString()}
+            Aed {Number (customer.totalAmount || "0").toLocaleString()}
           </span>
         </td>
 

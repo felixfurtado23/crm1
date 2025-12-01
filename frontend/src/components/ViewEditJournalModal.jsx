@@ -359,7 +359,7 @@ const ViewEditJournalModal = ({ journal, type, onClose, onSave }) => {
 
  
             {/* Attachments */}
-            <div className="expense-form-section">
+            {/* <div className="expense-form-section">
                 <h4>Attachments</h4>
                 <div className="expense-file-upload-area">
                   <input
@@ -374,7 +374,7 @@ const ViewEditJournalModal = ({ journal, type, onClose, onSave }) => {
                     <span>Supports PDF, JPG, PNG (Max 10MB each)</span>
                   </div>
                 </div>
-              </div>
+              </div> */}
           </div>
 
           <div className="form-footer">

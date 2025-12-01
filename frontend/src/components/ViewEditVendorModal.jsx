@@ -70,10 +70,11 @@ const ViewEditVendorModal = ({ vendor, type, onClose }) => {
         </div>
 
         {/* Modal Body */}
-        <div className="modal-body">
+        <div >
           {isView ? (
-            <div className="view-customer-details">
-              <div className="detail-section">
+            <div className="modal-body">
+                          <div className="modal-form-section">
+
                 <h4>Vendor Information</h4>
                 <div className="detail-grid">
                   <div className="detail-item">
@@ -90,8 +91,10 @@ const ViewEditVendorModal = ({ vendor, type, onClose }) => {
                   </div>
                 </div>
               </div>
+              <br></br>
 
-              <div className="detail-section">
+                         <div className="modal-form-section">
+
                 <h4>Contact Information</h4>
                 <div className="detail-grid">
                   <div className="detail-item">
@@ -110,8 +113,10 @@ const ViewEditVendorModal = ({ vendor, type, onClose }) => {
                   </div>
                 </div>
               </div>
+              <br></br>
 
-              <div className="detail-section">
+                          <div className="modal-form-section">
+
                 <h4>Business Information</h4>
                 <div className="detail-grid">
                   <div className="detail-item">
@@ -124,8 +129,10 @@ const ViewEditVendorModal = ({ vendor, type, onClose }) => {
                   </div>
                 </div>
               </div>
+              <br></br>
 
-              <div className="detail-section">
+                          <div className="modal-form-section">
+
                 <h4>Notes</h4>
                 <div className="detail-item full-width">
                   <div className="detail-value notes-value">

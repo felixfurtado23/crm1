@@ -14,11 +14,11 @@ const Reports = () => {
       collectionRate: 86
     },
     receivablesAging: [
-      { period: 'Current', amount: 18250, percentage: 43 },
-      { period: '1-30 Days', amount: 12450, percentage: 29 },
-      { period: '31-60 Days', amount: 8720, percentage: 20 },
-      { period: '61-90 Days', amount: 2160, percentage: 5 },
-      { period: '>90 Days', amount: 1000, percentage: 3 }
+      { period: 'Current', amount: 18250, percentage: 43, color: '#4CAF50' },
+      { period: '1-30 Days', amount: 12450, percentage: 29, color: '#2196F3' },
+      { period: '31-60 Days', amount: 8720, percentage: 20, color: '#FFC107' },
+      { period: '61-90 Days', amount: 2160, percentage: 5, color: '#FF9800' },
+      { period: '>90 Days', amount: 1000, percentage: 3, color: '#F44336' }
     ],
     unpaidInvoices: [
       { number: 'INV-0052', customer: 'Global Tech Inc.', date: '2024-01-15', dueDate: '2024-02-15', amount: 8820, status: 'overdue', daysOverdue: 15 },
@@ -42,16 +42,88 @@ const Reports = () => {
     alert(`Exporting report in ${format} format`);
   };
 
-  const SalesTrendChart = () => (
-    <div className="chart-container">
-      <div className="chart-bar" style={{ height: '80%' }}></div>
-      <div className="chart-bar" style={{ height: '60%' }}></div>
-      <div className="chart-bar" style={{ height: '90%' }}></div>
-      <div className="chart-bar" style={{ height: '70%' }}></div>
-      <div className="chart-bar" style={{ height: '85%' }}></div>
-      <div className="chart-bar" style={{ height: '95%' }}></div>
-    </div>
-  );
+
+  const handleTaxFilingDownload = (type) => {
+  const pdfFiles = {
+    'Corporate Tax': 'corporate-tax-filing.pdf',
+    'VAT': 'vat-filing.pdf'
+  };
+  
+  const fileName = pdfFiles[type];
+  
+  // For Vite, use root path from public folder
+  const link = document.createElement('a');
+  link.href = `/${fileName}`;  // Note: starts with / (root of public folder)
+  link.download = fileName;
+  
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  
+  console.log(`Downloading ${fileName}`);
+};
+
+
+  const PieChart = ({ data, title }) => {
+    let currentAngle = 0;
+    
+    return (
+      <div className="pie-chart-container">
+        <div className="pie-chart-title">{title}</div>
+        <div className="pie-chart-content">
+          <svg width="200" height="200" viewBox="0 0 200 200" className="pie-chart">
+            {data.map((item, index) => {
+              const percentage = item.percentage;
+              const angle = (percentage / 100) * 360;
+              const largeArcFlag = angle > 180 ? 1 : 0;
+              
+              const x1 = 100 + 80 * Math.cos(currentAngle * Math.PI / 180);
+              const y1 = 100 + 80 * Math.sin(currentAngle * Math.PI / 180);
+              
+              const x2 = 100 + 80 * Math.cos((currentAngle + angle) * Math.PI / 180);
+              const y2 = 100 + 80 * Math.sin((currentAngle + angle) * Math.PI / 180);
+              
+              const pathData = [
+                `M 100 100`,
+                `L ${x1} ${y1}`,
+                `A 80 80 0 ${largeArcFlag} 1 ${x2} ${y2}`,
+                `Z`
+              ].join(' ');
+              
+              const slice = (
+                <path
+                  key={index}
+                  d={pathData}
+                  fill={item.color}
+                  stroke="#fff"
+                  strokeWidth="2"
+                />
+              );
+              
+              currentAngle += angle;
+              return slice;
+            })}
+            <circle cx="100" cy="100" r="50" fill="white" />
+          </svg>
+          
+          <div className="pie-legend">
+            {data.map((item, index) => (
+              <div key={index} className="legend-item">
+                <div 
+                  className="legend-color" 
+                  style={{ backgroundColor: item.color }}
+                ></div>
+                <div className="legend-text">
+                  <span className="legend-label">{item.period}</span>
+                  <span className="legend-value">{item.percentage}% (AED {item.amount.toLocaleString()})</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   const ReportCard = ({ title, children, wide = false, onExport }) => (
     <div className={`report-card ${wide ? 'wide' : ''}`}>
@@ -72,55 +144,46 @@ const Reports = () => {
 
   return (
     <>
-      {/* Module Tabs */}
-      {/* <div className="module-tabs">
-        <div className="module-tab">Dashboard</div>
-        <div className="module-tab">CRM</div>
-        <div className="module-tab">Customers</div>
-        <div className="module-tab">Accounting</div>
-        <div className="module-tab active">Reports</div>
-      </div> */}
-
       {/* Page Header */}
       <div className="page-header">
         <div className="page-title">Business Reports</div>
-        {/* <div className="date-filter">
-          <select value={dateRange} onChange={(e) => setDateRange(e.target.value)}>
-            <option>This Month</option>
-            <option>Last Month</option>
-            <option>This Quarter</option>
-            <option>This Year</option>
-            <option>Custom Range</option>
-          </select>
-          <input 
-            type="date" 
-            value={startDate} 
-            onChange={(e) => setStartDate(e.target.value)}
-          />
-          <span>to</span>
-          <input 
-            type="date" 
-            value={endDate} 
-            onChange={(e) => setEndDate(e.target.value)}
-          />
-          <button className="btn" onClick={() => handleExport('All')}>
-            <i className="fas fa-download"></i> Export All
+
+ <div className="page-header-buttons">
+          <button 
+            className="page-header-btn"
+            onClick={() => handleTaxFilingDownload('Corporate Tax')}
+          >
+            <i className="fas fa-file-contract"></i>
+            Corporate Tax Filing
+            {/* <span className="btn-subtext">PDF mockup sent separately</span> */}
           </button>
-        </div> */}
-      </div>
+          
+          <button 
+            className="page-header-btn"
+            onClick={() => handleTaxFilingDownload('VAT')}
+          >
+            <i className="fas fa-receipt"></i>
+            VAT Filing
+            {/* <span className="btn-subtext">PDF mockup sent separately</span> */}
+          </button>
+          </div>
+
+          </div>
+
+ 
 
       {/* Summary Cards */}
       <div className="summary-cards">
         <div className="summary-card">
-          <div className="summary-value">${reportsData.summary.totalSales.toLocaleString()}</div>
+          <div className="summary-value">AED {reportsData.summary.totalSales.toLocaleString()}</div>
           <div className="summary-label">Total Sales</div>
         </div>
         <div className="summary-card">
-          <div className="summary-value">${reportsData.summary.cashCollected.toLocaleString()}</div>
+          <div className="summary-value">AED {reportsData.summary.cashCollected.toLocaleString()}</div>
           <div className="summary-label">Cash Collected</div>
         </div>
         <div className="summary-card">
-          <div className="summary-value">${reportsData.summary.totalReceivables.toLocaleString()}</div>
+          <div className="summary-value">AED {reportsData.summary.totalReceivables.toLocaleString()}</div>
           <div className="summary-label">Total Receivables</div>
         </div>
         <div className="summary-card total">
@@ -131,13 +194,13 @@ const Reports = () => {
 
       {/* Reports Grid */}
       <div className="reports-grid">
-        {/* Sales Trend Report */}
-        <ReportCard title="Sales Trend" onExport={handleExport}>
-          <SalesTrendChart />
+        {/* Receivables Aging Pie Chart */}
+        <ReportCard title="Receivables Aging Overview" onExport={handleExport}>
+          <PieChart data={reportsData.receivablesAging} title="Receivables Distribution" />
         </ReportCard>
 
-        {/* Receivables Aging Report */}
-        <ReportCard title="Receivables Aging" onExport={handleExport}>
+        {/* Receivables Aging Table */}
+        <ReportCard title="Receivables Aging Details" onExport={handleExport}>
           <table className="data-table">
             <thead>
               <tr>
@@ -150,7 +213,7 @@ const Reports = () => {
               {reportsData.receivablesAging.map((item, index) => (
                 <tr key={index}>
                   <td>{item.period}</td>
-                  <td>${item.amount.toLocaleString()}</td>
+                  <td>AED {item.amount.toLocaleString()}</td>
                   <td>{item.percentage}%</td>
                 </tr>
               ))}
@@ -179,7 +242,7 @@ const Reports = () => {
                   <td>{invoice.customer}</td>
                   <td>{invoice.date}</td>
                   <td>{invoice.dueDate}</td>
-                  <td>${invoice.amount.toLocaleString()}</td>
+                  <td>AED {invoice.amount.toLocaleString()}</td>
                   <td>
                     <span className={`status-badge status-${invoice.status}`}>
                       {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
@@ -230,14 +293,128 @@ const Reports = () => {
               {reportsData.vatSummary.map((item, index) => (
                 <tr key={index}>
                   <td>{item.period}</td>
-                  <td>${item.vatCollected.toLocaleString()}</td>
-                  <td>${item.vatPayable.toLocaleString()}</td>
+                  <td>AED {item.vatCollected.toLocaleString()}</td>
+                  <td>AED {item.vatPayable.toLocaleString()}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </ReportCard>
       </div>
+
+      <style jsx>{`
+      
+        .pie-chart-container {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pie-chart-title {
+  text-align: center;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #2c3e50;
+  font-size: 16px;
+}
+
+.pie-chart-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  width: 100%;
+}
+
+.pie-chart {
+  flex-shrink: 0;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+}
+
+.pie-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 180px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.legend-item:last-child {
+  border-bottom: none;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.legend-text {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.legend-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 2px;
+}
+
+.legend-value {
+  font-size: 12px;
+  color: #7f8c8d;
+  font-weight: 500;
+}
+
+/* Hover effects for better interactivity */
+.legend-item:hover {
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  padding: 6px 8px;
+  margin: 0 -8px;
+  transition: all 0.2s ease;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .pie-chart-content {
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .pie-chart {
+    width: 180px;
+    height: 180px;
+  }
+  
+  .pie-legend {
+    min-width: 100%;
+  }
+}
+
+/* Animation for pie chart slices */
+.pie-chart path {
+  transition: opacity 0.3s ease;
+}
+
+.pie-chart path:hover {
+  opacity: 0.8;
+  cursor: pointer;
+}
+      `}</style>
     </>
   );
 };

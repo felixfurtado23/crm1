@@ -113,6 +113,8 @@ const ViewEditJournalModal = ({ journal, type, onClose, onSave, accounts }) => {
     }, 1000);
   };
 
+
+
   const totals = calculateTotals();
   const getAccountName = (accountId) => {
     const account = accounts.find(acc => acc.id === accountId);
@@ -196,34 +198,42 @@ const ViewEditJournalModal = ({ journal, type, onClose, onSave, accounts }) => {
                       </tr>
                     </thead>
                     <tbody>
-                      {journal.entries.map((entry, index) => (
-                        <tr key={index} className="entry-row">
-                          <td>
-                            <div className="account-info">
-                              <div className="account-name">{getAccountName(entry.account)}</div>
-                            </div>
-                          </td>
-                          <td>
-                            <div className="entry-description">
-                              {entry.description || 'No description'}
-                            </div>
-                          </td>
-                          <td className="text-right">
-                            {entry.debit ? (
-                              <span className="amount debit">{parseFloat(entry.debit).toFixed(2)}</span>
-                            ) : (
-                              <span className="amount zero">-</span>
-                            )}
-                          </td>
-                          <td className="text-right">
-                            {entry.credit ? (
-                              <span className="amount credit">{parseFloat(entry.credit).toFixed(2)}</span>
-                            ) : (
-                              <span className="amount zero">-</span>
-                            )}
+                      {journal.entries && journal.entries.length > 0 ? (
+                        journal.entries.map((entry, index) => (
+                          <tr key={index} className="entry-row">
+                            <td>
+                              <div className="account-info">
+                                <div className="account-name">{getAccountName(entry.account)}</div>
+                              </div>
+                            </td>
+                            <td>
+                              <div className="entry-description">
+                                {entry.description || 'No description'}
+                              </div>
+                            </td>
+                            <td className="text-right">
+                              {entry.debit ? (
+                                <span className="amount debit">{parseFloat(entry.debit).toFixed(2)}</span>
+                              ) : (
+                                <span className="amount zero">-</span>
+                              )}
+                            </td>
+                            <td className="text-right">
+                              {entry.credit ? (
+                                <span className="amount credit">{parseFloat(entry.credit).toFixed(2)}</span>
+                              ) : (
+                                <span className="amount zero">-</span>
+                              )}
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan="4" className="text-center">
+                            No journal entries found
                           </td>
                         </tr>
-                      ))}
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -279,7 +289,8 @@ const ViewEditJournalModal = ({ journal, type, onClose, onSave, accounts }) => {
           ) : (
             // Edit/Create Mode
             <form onSubmit={handleSubmit} className="journal-form">
-              <div className="form-section">
+               <div className="modal-form-section">
+             
                 <h4>Basic Information</h4>
                 <div className="form-row">
                   <div className="form-group">
@@ -328,7 +339,7 @@ const ViewEditJournalModal = ({ journal, type, onClose, onSave, accounts }) => {
                 </div>
               </div>
 
-              <div className="form-section">
+               <div className="modal-form-section">
                 <div className="section-header">
                   <h4>Journal Entries *</h4>
                   <button type="button" className="btn btn-outline with-icon" onClick={addEntry}>
@@ -336,6 +347,7 @@ const ViewEditJournalModal = ({ journal, type, onClose, onSave, accounts }) => {
                     Add Entry
                   </button>
                 </div>
+                <br></br>
                 
                 <div className="entries-editor">
                   <div className="entries-table-container">
@@ -360,7 +372,7 @@ const ViewEditJournalModal = ({ journal, type, onClose, onSave, accounts }) => {
                                 required
                               >
                                 <option value="">Select Account</option>
-                                {accounts.map(account => (
+                                {accounts && accounts.map(account => (
                                   <option key={account.id} value={account.id}>
                                     {account.accountCode} - {account.accountName}
                                   </option>
@@ -418,7 +430,8 @@ const ViewEditJournalModal = ({ journal, type, onClose, onSave, accounts }) => {
                 </div>
               </div>
 
-              <div className="totals-section">
+           <div className="modal-form-section">
+                <h4>Total</h4>
                 <div className="total-row">
                   <span>Total Debits:</span>
                   <span className="amount total-debit">{totals.totalDebits.toFixed(2)}</span>
@@ -441,22 +454,7 @@ const ViewEditJournalModal = ({ journal, type, onClose, onSave, accounts }) => {
                 </div>
               </div>
 
-              <div className="form-section">
-                <h4>Attachments</h4>
-                <div className="file-upload-area">
-                  <input
-                    type="file"
-                    className="file-input"
-                    multiple
-                    onChange={(e) => handleInputChange('attachments', Array.from(e.target.files))}
-                  />
-                  <div className="upload-placeholder">
-                    <i className="fas fa-cloud-upload-alt"></i>
-                    <p>Drop files here or click to upload</p>
-                    <span>Supports PDF, JPG, PNG (Max 10MB each)</span>
-                  </div>
-                </div>
-              </div>
+         
             </form>
           )}
         </div>

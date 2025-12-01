@@ -58,10 +58,10 @@ const InvoicesTable = () => {
 
   // Invoice statistics for the header - using the summary fields
   const invoiceStats = [
-    { value: `AED ${summary.totalSales.toLocaleString()}`, label: 'Total Sales' },
-    { value: `AED ${summary.totalCashCollected.toLocaleString()}`, label: 'Cash Collected' },
-    { value: `AED ${vatAmount.toLocaleString(undefined, { maximumFractionDigits: 2 })}`, label: 'VAT (5%)' },
-    { value: `AED ${summary.totalReceivables.toLocaleString()}`, label: 'Receivables' }
+    { value: `AED ${summary.totalSales.toLocaleString()}`, label: 'Cash Collected YTD' },
+    { value: `AED ${summary.totalCashCollected.toLocaleString()}`, label: 'Current Receivables' },
+    { value: `AED ${vatAmount.toLocaleString(undefined, { maximumFractionDigits: 2 })}`, label: 'Current Overdues' },
+    { value: `AED ${summary.totalReceivables.toLocaleString()}`, label: 'VAT Since Last Return' }
   ];
 
   const handleExport = () => {

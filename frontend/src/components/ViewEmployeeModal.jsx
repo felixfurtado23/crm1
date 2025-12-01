@@ -20,7 +20,8 @@ const ViewEmployeeModal = ({ employee, onClose }) => {
         {/* Modal Body */}
         <div className="modal-body">
           <div className="view-employee-details">
-            <div className="detail-section">
+       <div className="modal-form-section">
+
               <h4>Basic Information</h4>
               <div className="detail-grid">
                 <div className="detail-item">
@@ -38,7 +39,8 @@ const ViewEmployeeModal = ({ employee, onClose }) => {
               </div>
             </div>
 
-            <div className="detail-section">
+        <div className="modal-form-section">
+
               <h4>Date Information</h4>
               <div className="detail-grid">
                 <div className="detail-item">
@@ -56,7 +58,8 @@ const ViewEmployeeModal = ({ employee, onClose }) => {
               </div>
             </div>
 
-            <div className="detail-section">
+          <div className="modal-form-section">
+
               <h4>Salary Information</h4>
               <div className="detail-grid">
                 <div className="detail-item">
@@ -74,7 +77,8 @@ const ViewEmployeeModal = ({ employee, onClose }) => {
               </div>
             </div>
 
-            <div className="detail-section">
+       <div className="modal-form-section">
+
               <h4>Total Information</h4>
               <div className="detail-grid">
                 <div className="detail-item">

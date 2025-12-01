@@ -46,9 +46,12 @@ const ViewEditInvoiceModal = ({ invoice, type, onClose }) => {
             <i className="fas fa-times"></i>
           </button>
         </div>
+
         <div className="modal-body">
           {isView ? (
             <div>
+            <div className="modal-form-section">
+                <h4>Customer Information</h4>
               <div style={{ marginBottom: "24px" }}>
                 <h3>Invoice {invoice.number}</h3>
                 <div
@@ -85,6 +88,11 @@ const ViewEditInvoiceModal = ({ invoice, type, onClose }) => {
                 </div>
               </div>
 
+              </div>
+
+
+  <div className="modal-form-section">
+                <h4>Items Table</h4>
               <table className="line-items-table">
                 <thead>
                   <tr>
@@ -106,6 +114,8 @@ const ViewEditInvoiceModal = ({ invoice, type, onClose }) => {
                 </tbody>
               </table>
 
+              </div>
+
               <div className="totals-section">
                 <div className="total-row">
                   <span>Subtotal:</span>
@@ -120,7 +130,10 @@ const ViewEditInvoiceModal = ({ invoice, type, onClose }) => {
                   <span>${parseFloat(invoice.total || 0).toFixed(2)}</span>
                 </div>
               </div>
-            </div>
+            
+
+</div>
+
           ) : (
             <form onSubmit={handleSubmit}>
               {/* Edit form similar to AddInvoiceModal but with existing data */}

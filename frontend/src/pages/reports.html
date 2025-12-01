@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accounts Receivable Aging - Line Graph</title>
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);
+            color: white;
+            padding: 20px 30px;
+        }
+        
+        h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .subtitle {
+            opacity: 0.8;
+            font-size: 14px;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .graph-container {
+            margin-bottom: 30px;
+            border: 1px solid #eaeaea;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid #4b6cb7;
+        }
+        
+        .card h3 {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .card .value {
+            font-size: 22px;
+            font-weight: bold;
+            color: #182848;
+        }
+        
+        .card .percentage {
+            font-size: 14px;
+            color: #4b6cb7;
+            margin-top: 5px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            color: #666;
+            font-size: 14px;
+            border-top: 1px solid #eaeaea;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+            
+            .summary-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const LineGraph = ({ data }) => {
+            const maxAmount = Math.max(...data.map(item => item.amount));
+            const graphHeight = 250;
+            const graphWidth = 700;
+            const pointRadius = 6;
+            const padding = 40;
+            
+            // Calculate points for the line
+            const points = data.map((item, index) => {
+                const x = padding + (index / (data.length - 1)) * (graphWidth - padding * 2);
+                const y = graphHeight - padding - (item.amount / maxAmount) * (graphHeight - padding * 2);
+                return { x, y, ...item };
+            });
+
+            // Create SVG path for the line
+            const pathData = points.map((point, index) => 
+                `${index === 0 ? 'M' : 'L'} ${point.x},${point.y}`
+            ).join(' ');
+
+            return (
+                <div style={{
+                    padding: '20px',
+                    backgroundColor: 'white'
+                }}>
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginBottom: '20px'
+                    }}>
+                        <h3 style={{ 
+                            color: '#182848',
+                            fontSize: '18px'
+                        }}>
+                            Receivables Over Time
+                        </h3>
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center'
+                        }}>
+                            <div style={{
+                                width: '16px',
+                                height: '4px',
+                                backgroundColor: '#4b6cb7',
+                                marginRight: '8px',
+                                borderRadius: '2px'
+                            }}></div>
+                            <span style={{
+                                fontSize: '14px',
+                                color: '#666'
+                            }}>Amount ($)</span>
+                        </div>
+                    </div>
+                    
+                    <svg 
+                        width="100%" 
+                        viewBox={`0 0 ${graphWidth} ${graphHeight}`}
+                        style={{ display: 'block' }}
+                    >
+                        {/* Y-axis grid lines and labels */}
+                        {[0, 0.25, 0.5, 0.75, 1].map((ratio, index) => {
+                            const y = graphHeight - padding - (ratio * (graphHeight - padding * 2));
+                            const value = Math.round(maxAmount * ratio);
+                            
+                            return (
+                                <g key={index}>
+                                    <line
+                                        x1={padding}
+                                        y1={y}
+                                        x2={graphWidth - padding}
+                                        y2={y}
+                                        stroke="#eaeaea"
+                                        strokeWidth="1"
+                                        strokeDasharray="4,2"
+                                    />
+                                    <text
+                                        x={padding - 10}
+                                        y={y + 4}
+                                        textAnchor="end"
+                                        fontSize="12"
+                                        fill="#666"
+                                    >
+                                        ${(value / 1000).toFixed(0)}k
+                                    </text>
+                                </g>
+                            );
+                        })}
+                        
+                        {/* X-axis line */}
+                        <line
+                            x1={padding}
+                            y1={graphHeight - padding}
+                            x2={graphWidth - padding}
+                            y2={graphHeight - padding}
+                            stroke="#ddd"
+                            strokeWidth="1"
+                        />
+                        
+                        {/* Y-axis line */}
+                        <line
+                            x1={padding}
+                            y1={padding}
+                            x2={padding}
+                            y2={graphHeight - padding}
+                            stroke="#ddd"
+                            strokeWidth="1"
+                        />
+                        
+                        {/* Main line */}
+                        <path
+                            d={pathData}
+                            fill="none"
+                            stroke="#4b6cb7"
+                            strokeWidth="3"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        />
+                        
+                        {/* Gradient under the line */}
+                        <defs>
+                            <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stopColor="#4b6cb7" stopOpacity="0.2" />
+                                <stop offset="100%" stopColor="#4b6cb7" stopOpacity="0" />
+                            </linearGradient>
+                        </defs>
+                        
+                        <path
+                            d={`${pathData} L ${points[points.length-1].x},${graphHeight - padding} L ${points[0].x},${graphHeight - padding} Z`}
+                            fill="url(#areaGradient)"
+                            stroke="none"
+                        />
+                        
+                        {/* Data points */}
+                        {points.map((point, index) => (
+                            <g key={index}>
+                                <circle
+                                    cx={point.x}
+                                    cy={point.y}
+                                    r={pointRadius}
+                                    fill="#4b6cb7"
+                                    stroke="white"
+                                    strokeWidth="2"
+                                />
+                                <circle
+                                    cx={point.x}
+                                    cy={point.y}
+                                    r={pointRadius + 4}
+                                    fill="#4b6cb7"
+                                    opacity="0.2"
+                                />
+                            </g>
+                        ))}
+                        
+                        {/* Point labels */}
+                        {points.map((point, index) => (
+                            <g key={index}>
+                                <rect
+                                    x={point.x - 25}
+                                    y={point.y - 30}
+                                    width="50"
+                                    height="20"
+                                    rx="4"
+                                    fill="#182848"
+                                />
+                                <text
+                                    x={point.x}
+                                    y={point.y - 17}
+                                    textAnchor="middle"
+                                    fontSize="10"
+                                    fill="white"
+                                    fontWeight="bold"
+                                >
+                                    ${(point.amount / 1000).toFixed(0)}k
+                                </text>
+                            </g>
+                        ))}
+                    </svg>
+                    
+                    {/* X-axis labels */}
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        marginTop: '10px',
+                        padding: `0 ${padding}px`
+                    }}>
+                        {data.map((item, index) => (
+                            <div 
+                                key={index}
+                                style={{
+                                    textAlign: 'center',
+                                    fontSize: '12px',
+                                    color: '#666',
+                                    width: `${100 / data.length}%`
+                                }}
+                            >
+                                {item.period}
+                                <div style={{
+                                    fontSize: '11px',
+                                    color: '#4b6cb7',
+                                    marginTop: '2px'
+                                }}>
+                                    {item.percentage}%
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        const SummaryCards = ({ data }) => {
+            const totalAmount = data.reduce((sum, item) => sum + item.amount, 0);
+            const currentAmount = data.find(item => item.period === "Current").amount;
+            const overdueAmount = totalAmount - currentAmount;
+            
+            return (
+                <div className="summary-cards">
+                    <div className="card">
+                        <h3>Total Receivables</h3>
+                        <div className="value">${totalAmount.toLocaleString()}</div>
+                    </div>
+                    <div className="card">
+                        <h3>Current</h3>
+                        <div className="value">${currentAmount.toLocaleString()}</div>
+                        <div className="percentage">
+                            {Math.round((currentAmount / totalAmount) * 100)}% of total
+                        </div>
+                    </div>
+                    <div className="card">
+                        <h3>Overdue</h3>
+                        <div className="value">${overdueAmount.toLocaleString()}</div>
+                        <div className="percentage">
+                            {Math.round((overdueAmount / totalAmount) * 100)}% of total
+                        </div>
+                    </div>
+                    <div className="card">
+                        <h3>Largest Overdue</h3>
+                        <div className="value">$55,000</div>
+                        <div className="percentage">1-30 Days category</div>
+                    </div>
+                </div>
+            );
+        };
+
+        const App = () => {
+            const graphData = [
+                { period: "Current", amount: 120000, percentage: 48 },
+                { period: "1–30 Days", amount: 55000, percentage: 22 },
+                { period: "31–60 Days", amount: 30000, percentage: 12 },
+                { period: "61–90 Days", amount: 22000, percentage: 9 },
+                { period: "90+ Days", amount: 23000, percentage: 9 }
+            ];
+
+            return (
+                <div className="container">
+                    <header>
+                        <h1>Accounts Receivable Aging</h1>
+                        <div className="subtitle">Line graph visualization of outstanding receivables</div>
+                    </header>
+                    
+                    <div className="content">
+                        <div className="graph-container">
+                            <LineGraph data={graphData} />
+                        </div>
+                        
+                        <SummaryCards data={graphData} />
+                    </div>
+                    
+                    <footer>
+                        <p>Data as of {new Date().toLocaleDateString()}</p>
+                    </footer>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>

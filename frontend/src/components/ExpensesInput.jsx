@@ -17,7 +17,7 @@ const ExpensesInput = () => {
       currency: 'AED',
       vendor: 'Office Supplies Co.',
       vendorContact: 'supplies@officeco.com',
-      vendorPhone: '+1 (555) 123-4567',
+      vendorPhone: '+971 123-4567',
       notes: 'Monthly office supplies including printer paper, ink cartridges, and stationery',
       status: 'Posted',
       entries: [
@@ -52,7 +52,7 @@ const ExpensesInput = () => {
       currency: 'AED',
       vendor: 'Tech Equipment Ltd.',
       vendorContact: 'sales@techequipment.com',
-      vendorPhone: '+1 (555) 987-6543',
+      vendorPhone: '+971 987-6543',
       notes: 'Computer peripherals for new hires',
       status: 'Draft',
       entries: [

@@ -96,7 +96,7 @@ const ViewEditInventoryModal = ({ item, type, onClose, onUpdate }) => {
 
               <div className="form-row">
                 <div className="form-group">
-                  <label>Cost Price ($)</label>
+                  <label>Cost Price (AED)</label>
                   <input
                     type="number"
                     name="costPrice"
@@ -110,7 +110,7 @@ const ViewEditInventoryModal = ({ item, type, onClose, onUpdate }) => {
                 </div>
 
                 <div className="form-group">
-                  <label>Selling Price ($)</label>
+                  <label>Selling Price (AED)</label>
                   <input
                     type="number"
                     name="sellingPrice"

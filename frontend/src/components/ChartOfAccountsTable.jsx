@@ -45,7 +45,12 @@ const ChartOfAccountsTable = ({ accounts, onAccountUpdate }) => {
       alert('Error deleting account: ' + error.message);
     }
   }
+
+  
 };
+
+
+
 
   return (
     <>
@@ -112,17 +117,17 @@ const ChartOfAccountsTable = ({ accounts, onAccountUpdate }) => {
         </tbody>
       </table>
 
-      {showModal && selectedAccount && (
-        <ViewEditAccountModal 
-          account={selectedAccount}
-          type={modalType}
-          onClose={() => {
-            setShowModal(false);
-            setSelectedAccount(null);
-          }}
-          onSave={onAccountUpdate}
-        />
-      )}
+      {showModal && (
+  <ViewEditAccountModal 
+    account={selectedAccount}
+    type={modalType}
+    onClose={() => {
+      setShowModal(false);
+      setSelectedAccount(null);
+    }}
+    onSave={onAccountUpdate}
+  />
+)}
     </>
   );
 };
