@@ -4,7 +4,7 @@ import ViewEditCustomerModal from "./ViewEditCustomerModal";
 const CustomerRow = ({ customer }) => {
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState("view");
-  const API_BASE_URL = 'http://localhost:8000';
+  const API_BASE_URL = 'http://72.61.171.226:8000';
 
   const handleAction = async (action) => {
     if (action === "view" || action === "edit") {

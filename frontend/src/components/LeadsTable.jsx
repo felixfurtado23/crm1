@@ -7,7 +7,7 @@ const LeadsTable = () => {
   const [leads, setLeads] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [loading, setLoading] = useState(true);
-  const API_BASE_URL = 'http://localhost:8000';
+  const API_BASE_URL = 'http://72.61.171.226:8000';
 
   useEffect(() => {
     const fetchLeads = async () => {

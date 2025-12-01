@@ -47,7 +47,7 @@ const ViewEditCustomerModal = ({ customer, type, onClose }) => {
 
       console.log('Sending customer data:', dataToSend);
 
-      const response = await fetch('http://localhost:8000/api/customers/edit/', {
+      const response = await fetch('http://72.61.171.226:8000/api/customers/edit/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

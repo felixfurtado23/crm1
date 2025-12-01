@@ -11,7 +11,7 @@ const ViewEditJournalModal = ({ journal, type, onClose, onSave }) => {
   });
   const [accounts, setAccounts] = useState([]);
   const [currencies] = useState(['USD', 'EUR', 'GBP', 'JPY', 'CAD']);
-  const API_BASE_URL = 'http://localhost:8000';
+  const API_BASE_URL = 'http://72.61.171.226:8000';
 
   useEffect(() => {
     fetchAccounts();

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 const SimpleLeads = () => {
   const [leads, setLeads] = useState([]);
-  const API_BASE_URL = 'http://localhost:8000';
+  const API_BASE_URL = 'http://72.61.171.226:8000';
 
   useEffect(() => {
     const fetchLeads = async () => {

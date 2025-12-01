@@ -5,7 +5,7 @@ const ChartOfAccountsTable = ({ accounts, onAccountUpdate }) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [modalType, setModalType] = useState('view');
-  const API_BASE_URL = 'http://localhost:8000';
+  const API_BASE_URL = 'http://72.61.171.226:8000';
 
   const getAccountTypeColor = (type) => {
     const colors = {

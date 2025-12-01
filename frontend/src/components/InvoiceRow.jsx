@@ -4,7 +4,7 @@ import ViewEditInvoiceModal from './ViewEditInvoiceModal';
 const InvoiceRow = ({ invoice }) => {
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('view');
-  const API_BASE_URL = 'http://localhost:8000';
+  const API_BASE_URL = 'http://72.61.171.226:8000';
 
   const getStatusClass = (status) => {
     const statusMap = {

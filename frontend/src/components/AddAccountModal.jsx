@@ -10,7 +10,7 @@ const AddAccountModal = ({ onClose, onSave }) => {
   });
 
   const accountTypes = ['Asset', 'Liability', 'Equity', 'Income', 'Expense'];
-  const API_BASE_URL = 'http://localhost:8000';
+  const API_BASE_URL = 'http://72.61.171.226:8000';
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;

@@ -21,7 +21,7 @@ const AddInvoiceModal = ({ onClose, onSave }) => {
     address: '',
     trnNumber: ''
   });
-  const API_BASE_URL = 'http://localhost:8000';
+  const API_BASE_URL = 'http://72.61.171.226:8000';
 
   useEffect(() => {
     const fetchCustomers = async () => {
