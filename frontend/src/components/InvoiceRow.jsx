@@ -98,7 +98,7 @@ const InvoiceRow = ({ invoice }) => {
         <td>{formatCustomerDisplay()}</td>
         <td>{invoice.date}</td>
         <td>{invoice.dueDate}</td>
-        <td>Aed {Number(invoice.total).toLocaleString()}</td>
+        <td>{Number(invoice.total).toLocaleString()}</td>
         <td>
           <span className={`status-badge ${getStatusClass(invoice.status)}`}>
             {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}

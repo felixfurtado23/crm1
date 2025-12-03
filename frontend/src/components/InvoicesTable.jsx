@@ -25,7 +25,10 @@ const InvoicesTable = () => {
         const invoicesData = await invoicesRes.json();
         const summaryData = await summaryRes.json();
 
-        setInvoices(invoicesData);
+        // Sort invoices: overdue first, then by amount (highest to lowest)
+        const sortedInvoices = sortInvoices(invoicesData);
+        
+        setInvoices(sortedInvoices);
         setSummary(summaryData);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -37,8 +40,45 @@ const InvoicesTable = () => {
     fetchData();
   }, []);
 
+  // Function to check if an invoice is overdue
+  const isInvoiceOverdue = (invoice) => {
+    if (!invoice.dueDate) return false;
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Remove time portion
+    
+    const dueDate = new Date(invoice.dueDate);
+    dueDate.setHours(0, 0, 0, 0); // Remove time portion
+    
+    return dueDate < today && invoice.status !== 'paid';
+  };
+
+  // Function to sort invoices: overdue first, then by amount
+  const sortInvoices = (invoicesArray) => {
+    return [...invoicesArray].sort((a, b) => {
+      // First, sort by overdue status
+      const aIsOverdue = isInvoiceOverdue(a);
+      const bIsOverdue = isInvoiceOverdue(b);
+      
+      if (aIsOverdue && !bIsOverdue) {
+        return -1; // a is overdue, b is not -> a comes first
+      }
+      if (!aIsOverdue && bIsOverdue) {
+        return 1; // b is overdue, a is not -> b comes first
+      }
+      
+      // If both are overdue or both are not overdue, sort by amount (highest first)
+      const amountA = parseFloat(a.total) || 0;
+      const amountB = parseFloat(b.total) || 0;
+      
+      return amountB - amountA; // Descending order (highest amount first)
+    });
+  };
+
   const addInvoice = (newInvoice) => {
-    setInvoices([...invoices, { ...newInvoice, id: Date.now() }]);
+    // Add new invoice and re-sort
+    const updatedInvoices = sortInvoices([...invoices, { ...newInvoice, id: Date.now() }]);
+    setInvoices(updatedInvoices);
     setShowAddModal(false);
     fetchSummary();
   };
@@ -58,10 +98,10 @@ const InvoicesTable = () => {
 
   // Invoice statistics for the header - using the summary fields
   const invoiceStats = [
-    { value: `AED ${summary.totalSales.toLocaleString()}`, label: 'Cash Collected YTD' },
-    { value: `AED ${summary.totalCashCollected.toLocaleString()}`, label: 'Current Receivables' },
-    { value: `AED ${vatAmount.toLocaleString(undefined, { maximumFractionDigits: 2 })}`, label: 'Current Overdues' },
-    { value: `AED ${summary.totalReceivables.toLocaleString()}`, label: 'VAT Since Last Return' }
+    { value: `AED ${Math.round(summary.totalSales).toLocaleString()}`, label: 'Cash Collected YTD' },
+    { value: `AED ${Math.round(summary.totalCashCollected).toLocaleString()}`, label: 'Current Receivables' },
+    { value: `AED ${Math.round(vatAmount).toLocaleString()}`, label: 'Current Overdues' },
+    { value: `AED ${Math.round(summary.totalReceivables).toLocaleString()}`, label: 'VAT Since Last Return' }
   ];
 
   const handleExport = () => {
@@ -100,7 +140,7 @@ const InvoicesTable = () => {
               <th>Customer</th>
               <th>Date</th>
               <th>Due Date</th>
-              <th>Amount</th>
+              <th>Amount (AED)</th>
               <th>Status</th>
               <th>Actions</th>
             </tr>

@@ -23,6 +23,37 @@ const AddInvoiceModal = ({ onClose, onSave }) => {
   });
   const API_BASE_URL = 'http://72.61.171.226:8000';
 
+  // Helper function to format numbers with commas
+  const formatNumber = (value) => {
+    if (value === '' || value === null || value === undefined) return '0.00';
+    const num = parseFloat(value);
+    if (isNaN(num)) return '0.00';
+    return num.toLocaleString('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+  };
+
+  // Function to format date as DD/MM/YYYY
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    
+    // Check if already in DD/MM/YYYY format
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateString)) {
+      return dateString;
+    }
+    
+    // Try to parse various date formats
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return dateString;
+    
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    
+    return `${day}/${month}/${year}`;
+  };
+
   useEffect(() => {
     const fetchCustomers = async () => {
       try {
@@ -65,17 +96,34 @@ const AddInvoiceModal = ({ onClose, onSave }) => {
 
   const handleItemChange = (index, field, value) => {
     const newItems = [...formData.items];
-    newItems[index] = {
-      ...newItems[index],
-      [field]: value
-    };
     
-    // Calculate amount if quantity or price changes
-    if (field === 'quantity' || field === 'price') {
-      const quantity = parseFloat(newItems[index].quantity) || 0;
-      const price = parseFloat(newItems[index].price) || 0;
-      newItems[index].amount = quantity * price;
+    if (field === 'price') {
+      // Clean price input
+      let cleanedValue = value;
+      cleanedValue = cleanedValue.replace(/[^\d.]/g, '');
+      const decimalCount = cleanedValue.split('.').length - 1;
+      if (decimalCount > 1) {
+        cleanedValue = cleanedValue.substring(0, cleanedValue.lastIndexOf('.'));
+      }
+      if (cleanedValue.includes('.')) {
+        const parts = cleanedValue.split('.');
+        if (parts[1].length > 2) {
+          cleanedValue = parts[0] + '.' + parts[1].substring(0, 2);
+        }
+      }
+      newItems[index][field] = cleanedValue;
+    } else if (field === 'quantity') {
+      // Clean quantity input
+      const intValue = parseInt(value) || 0;
+      newItems[index][field] = intValue >= 1 ? intValue : 1;
+    } else {
+      newItems[index][field] = value;
     }
+    
+    // Calculate amount
+    const quantity = parseFloat(newItems[index].quantity) || 0;
+    const price = parseFloat(newItems[index].price) || 0;
+    newItems[index].amount = quantity * price;
     
     setFormData({
       ...formData,
@@ -115,9 +163,6 @@ const AddInvoiceModal = ({ onClose, onSave }) => {
     return { subtotal, vat, total };
   };
 
-
-
-
 const generatePDF = (isCustom = false) => {
   const { subtotal, vat, total } = calculateTotals();
   const invoiceNumber = isCustom ? `INV-CUST-${Date.now().toString().slice(-4)}` : `INV-${Date.now().toString().slice(-4)}`;
@@ -134,17 +179,9 @@ const generatePDF = (isCustom = false) => {
   console.log('Signature:', signatureUrl);
   console.log('Stamp:', stampUrl);
 
-  // Test if images load
-  const testImageLoad = (url, name) => {
-    const img = new Image();
-    img.onload = () => console.log(`✅ ${name} loaded successfully`);
-    img.onerror = () => console.log(`❌ ${name} failed to load: ${url}`);
-    img.src = url;
-  };
-
-  testImageLoad(logoUrl, 'Logo');
-  testImageLoad(signatureUrl, 'Signature');
-  testImageLoad(stampUrl, 'Stamp');
+  // Format dates for PDF
+  const invoiceDate = formatDate(formData.date);
+  const dueDate = formatDate(formData.dueDate);
 
   const invoiceHTML = `
     <!DOCTYPE html>
@@ -385,6 +422,7 @@ body {
 .amount {
   text-align: right;
   font-weight: 600;
+  font-family: 'Courier New', monospace;
 }
 
 .text-right {
@@ -452,11 +490,11 @@ body {
               </div>
               <div class="meta-item">
                 <span class="meta-label">Invoice Date</span>
-                <span class="meta-value">${formData.date}</span>
+                <span class="meta-value">${invoiceDate}</span>
               </div>
               <div class="meta-item">
                 <span class="meta-label">Due Date</span>
-                <span class="meta-value">${formData.dueDate}</span>
+                <span class="meta-value">${dueDate}</span>
               </div>
               <div class="meta-item">
                 <span class="meta-label">Currency</span>
@@ -489,9 +527,9 @@ body {
     ${formData.items.map(item => `
       <tr>
         <td style="text-align: left; width: 45%; padding: 12px 10px;">${item.description || 'Service'}</td>
-        <td style="text-align: right; width: 20%; padding: 12px 10px;">AED ${parseFloat(item.price || 0).toFixed(2)}</td>
-        <td style="text-align: center; width: 15%; padding: 12px 10px;">${item.quantity || 1}</td>
-        <td style="text-align: right; width: 20%; padding: 12px 10px;">AED ${parseFloat(item.amount || 0).toFixed(2)}</td>
+        <td style="text-align: right; width: 20%; padding: 12px 10px; font-family: 'Courier New', monospace; font-weight: 600;">AED ${formatNumber(item.price)}</td>
+        <td style="text-align: center; width: 15%; padding: 12px 10px; font-family: 'Courier New', monospace;">${item.quantity?.toLocaleString() || 1}</td>
+        <td style="text-align: right; width: 20%; padding: 12px 10px; font-family: 'Courier New', monospace; font-weight: 700; color: #375b6d;">AED ${formatNumber(item.amount)}</td>
       </tr>
     `).join('')}
   </tbody>
@@ -502,15 +540,15 @@ body {
         <div class="totals-section">
           <div class="total-row">
             <span>Gross Amount:</span>
-            <span class="amount">AED ${subtotal.toFixed(2)}</span>
+            <span class="amount">AED ${formatNumber(subtotal)}</span>
           </div>
           <div class="total-row">
             <span>VAT (5%):</span>
-            <span class="amount">AED ${vat.toFixed(2)}</span>
+            <span class="amount">AED ${formatNumber(vat)}</span>
           </div>
           <div class="total-row final">
             <span>Total Amount Due:</span>
-            <span class="amount">AED ${total.toFixed(2)}</span>
+            <span class="amount">AED ${formatNumber(total)}</span>
           </div>
         </div>
         
@@ -590,8 +628,6 @@ body {
       console.error('PDF generation failed:', error);
     });
 };
-
-
 
   const handleSubmit = async (e) => {
   e.preventDefault();
@@ -719,7 +755,7 @@ body {
 
   return (
     <div className="modal-overlay active" onClick={onClose}>
-  <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+  <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '1000px' }}>
 
     {/* 🔥 THEMED HEADER */}
     <div className="modal-header ">
@@ -744,6 +780,7 @@ body {
           type="button"
           className={`modern-section-btn ${!showCustomInvoice ? 'active' : ''}`}
           onClick={() => setShowCustomInvoice(false)}
+          style={{ textAlign: 'center' }}
         >
           <div className="section-icon-wrapper">
             <i className="fas fa-users"></i>
@@ -754,6 +791,7 @@ body {
           type="button"
           className={`modern-section-btn ${showCustomInvoice ? 'active' : ''}`}
           onClick={() => setShowCustomInvoice(true)}
+          style={{ textAlign: 'center' }}
         >
           <div className="section-icon-wrapper">
             <i className="fas fa-user-plus"></i>
@@ -781,6 +819,7 @@ body {
               onChange={handleCustomInvoiceChange}
               placeholder="Enter company name"
               required
+              style={{ textAlign: 'left', direction: 'ltr' }}
             />
           </div>
 
@@ -795,6 +834,7 @@ body {
                 onChange={handleCustomInvoiceChange}
                 placeholder="Contact person name"
                 required
+                style={{ textAlign: 'left', direction: 'ltr' }}
               />
             </div>
             <div className="form-group">
@@ -806,6 +846,7 @@ body {
                 value={customInvoiceData.title}
                 onChange={handleCustomInvoiceChange}
                 placeholder="Job title/position"
+                style={{ textAlign: 'left', direction: 'ltr' }}
               />
             </div>
             <div className="form-group">
@@ -817,6 +858,7 @@ body {
                 value={customInvoiceData.trnNumber}
                 onChange={handleCustomInvoiceChange}
                 placeholder="Tax Registration Number"
+                style={{ textAlign: 'left', direction: 'ltr' }}
               />
             </div>
           </div>
@@ -831,6 +873,7 @@ body {
                 value={customInvoiceData.email}
                 onChange={handleCustomInvoiceChange}
                 placeholder="email@company.com"
+                style={{ textAlign: 'left', direction: 'ltr' }}
               />
             </div>
             <div className="form-group">
@@ -842,6 +885,7 @@ body {
                 value={customInvoiceData.phone}
                 onChange={handleCustomInvoiceChange}
                 placeholder="+971 XX XXX XXXX"
+                style={{ textAlign: 'left', direction: 'ltr' }}
               />
             </div>
           </div>
@@ -855,6 +899,7 @@ body {
               onChange={handleCustomInvoiceChange}
               placeholder="Full company address"
               rows="3"
+              style={{ textAlign: 'left', direction: 'ltr' }}
             />
           </div>
 
@@ -864,6 +909,7 @@ body {
             handleItemChange={handleItemChange}
             addLineItem={addLineItem}
             removeLineItem={removeLineItem}
+            formatNumber={formatNumber}
           />
 
           <div className="form-row">
@@ -876,6 +922,7 @@ body {
                 value={formData.date}
                 onChange={handleChange}
                 required
+                style={{ textAlign: 'left', direction: 'ltr' }}
               />
             </div>
             <div className="form-group">
@@ -887,13 +934,14 @@ body {
                 value={formData.dueDate}
                 onChange={handleChange}
                 required
+                style={{ textAlign: 'left', direction: 'ltr' }}
               />
             </div>
           </div>
 
           <div className="form-group">
             <label>Status</label>
-            <select name="status" className="form-control" value={formData.status} onChange={handleChange}>
+            <select name="status" className="form-control" value={formData.status} onChange={handleChange} style={{ textAlign: 'left', direction: 'ltr' }}>
               <option value="draft">Draft</option>
               <option value="sent">Sent</option>
               <option value="paid">Paid</option>
@@ -917,6 +965,7 @@ body {
                 value={formData.customer} 
                 onChange={handleChange}
                 required
+                style={{ textAlign: 'left', direction: 'ltr' }}
               >
                 <option value="">Select Customer</option>
                 {customers.map(customer => (
@@ -933,6 +982,7 @@ body {
                 className="form-control" 
                 value={`INV-${Date.now().toString().slice(-4)}`} 
                 readOnly 
+                style={{ textAlign: 'left', direction: 'ltr', fontFamily: "'Courier New', monospace", fontWeight: '600' }}
               />
             </div>
           </div>
@@ -947,6 +997,7 @@ body {
                 value={formData.date}
                 onChange={handleChange}
                 required
+                style={{ textAlign: 'left', direction: 'ltr' }}
               />
             </div>
             <div className="form-group">
@@ -958,6 +1009,7 @@ body {
                 value={formData.dueDate}
                 onChange={handleChange}
                 required
+                style={{ textAlign: 'left', direction: 'ltr' }}
               />
             </div>
           </div>
@@ -968,11 +1020,12 @@ body {
             handleItemChange={handleItemChange}
             addLineItem={addLineItem}
             removeLineItem={removeLineItem}
+            formatNumber={formatNumber}
           />
 
           <div className="form-group">
             <label>Status</label>
-            <select name="status" className="form-control" value={formData.status} onChange={handleChange}>
+            <select name="status" className="form-control" value={formData.status} onChange={handleChange} style={{ textAlign: 'left', direction: 'ltr' }}>
               <option value="draft">Draft</option>
               <option value="sent">Sent</option>
               <option value="paid">Paid</option>
@@ -984,35 +1037,52 @@ body {
       )}
 
       {/* Accounting Entry Section */}
-      <div className="accounting-entry">
-        <h4>Accounting Entry (Accrual Basis)</h4>
-        <table className="entry-table">
+      <div className="accounting-entry" style={{ 
+        background: '#f8f9fa', 
+        padding: '20px',
+        borderRadius: '8px',
+        border: '1px solid #e9ecef'
+      }}>
+        <h4 style={{ color: '#375b6d', marginBottom: '16px' }}>Accounting Entry (Accrual Basis)</h4>
+        <table className="entry-table" style={{ width: '100%' }}>
           <thead>
             <tr>
-              <th>Account</th>
-              <th>Debit (AED)</th>
-              <th>Credit (AED)</th>
-              <th>Description</th>
+              <th style={{ textAlign: 'left' }}>Account</th>
+              <th style={{ textAlign: 'right' }}>Debit (AED)</th>
+              <th style={{ textAlign: 'right' }}>Credit (AED)</th>
+              <th style={{ textAlign: 'left' }}>Description</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>Accounts Receivable</td>
-              <td>{total.toFixed(2)}</td>
-              <td></td>
-              <td>Record sale to customer</td>
+              <td style={{ textAlign: 'left' }}>Accounts Receivable</td>
+              <td style={{ 
+                textAlign: 'right',
+                fontFamily: "'Courier New', monospace",
+                fontWeight: '600'
+              }}>{formatNumber(total)}</td>
+              <td style={{ textAlign: 'right' }}></td>
+              <td style={{ textAlign: 'left' }}>Record sale to customer</td>
             </tr>
             <tr>
-              <td>Sales Revenue</td>
-              <td></td>
-              <td>{subtotal.toFixed(2)}</td>
-              <td>Record sale to customer</td>
+              <td style={{ textAlign: 'left' }}>Sales Revenue</td>
+              <td style={{ textAlign: 'right' }}></td>
+              <td style={{ 
+                textAlign: 'right',
+                fontFamily: "'Courier New', monospace",
+                fontWeight: '600'
+              }}>{formatNumber(subtotal)}</td>
+              <td style={{ textAlign: 'left' }}>Record sale to customer</td>
             </tr>
             <tr>
-              <td>Output VAT Payable</td>
-              <td></td>
-              <td>{vat.toFixed(2)}</td>
-              <td>Record VAT liability</td>
+              <td style={{ textAlign: 'left' }}>Output VAT Payable</td>
+              <td style={{ textAlign: 'right' }}></td>
+              <td style={{ 
+                textAlign: 'right',
+                fontFamily: "'Courier New', monospace",
+                fontWeight: '600'
+              }}>{formatNumber(vat)}</td>
+              <td style={{ textAlign: 'left' }}>Record VAT liability</td>
             </tr>
           </tbody>
         </table>
@@ -1044,7 +1114,7 @@ body {
 };
 
 // Line Items Component
-const InvoiceLineItems = ({ formData, handleItemChange, addLineItem, removeLineItem }) => {
+const InvoiceLineItems = ({ formData, handleItemChange, addLineItem, removeLineItem, formatNumber }) => {
   const calculateTotals = () => {
     if (!formData.items || !Array.isArray(formData.items)) {
       return { subtotal: 0, vat: 0, total: 0 };
@@ -1066,85 +1136,163 @@ const InvoiceLineItems = ({ formData, handleItemChange, addLineItem, removeLineI
     <>
       <div className="form-group">
         <label>Line Items</label>
-        <table className="line-items-table">
-          <thead>
-            <tr>
-              <th>Description</th>
-              <th>Quantity</th>
-              <th>Unit Price (AED)</th>
-              <th>Amount (AED)</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {formData.items && formData.items.map((item, index) => (
-              <tr key={index}>
-                <td>
-                  <input
-                    type="text"
-                    placeholder="Item description"
-                    className="line-description"
-                    value={item.description || ''}
-                    onChange={(e) => handleItemChange(index, 'description', e.target.value)}
-                    required
-                  />
-                </td>
-                <td>
-                  <input
-                    type="number"
-                    placeholder="1"
-                    className="line-quantity"
-                    value={item.quantity || 1}
-                    min="1"
-                    onChange={(e) => handleItemChange(index, 'quantity', e.target.value)}
-                    required
-                  />
-                </td>
-                <td>
-                  <input
-                    type="number"
-                    placeholder="0.00"
-                    className="line-price"
-                    step="0.01"
-                    min="0"
-                    value={item.price || 0}
-                    onChange={(e) => handleItemChange(index, 'price', e.target.value)}
-                    required
-                  />
-                </td>
-                <td className="line-amount">{(item.amount || 0).toFixed(2)}</td>
-                <td>
-                  {formData.items.length > 1 && (
-                    <button 
-                      type="button" 
-                      className="remove-line"
-                      onClick={() => removeLineItem(index)}
-                    >
-                      <i className="fas fa-times"></i>
-                    </button>
-                  )}
-                </td>
+        <div style={{ overflowX: 'auto' }}>
+          <table className="line-items-table" style={{ width: '100%' }}>
+            <thead>
+              <tr>
+                <th style={{ textAlign: 'left' }}>Description</th>
+                <th style={{ textAlign: 'right' }}>Quantity</th>
+                <th style={{ textAlign: 'right' }}>Unit Price (AED)</th>
+                <th style={{ textAlign: 'right' }}>Amount (AED)</th>
+                <th></th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {formData.items && formData.items.map((item, index) => (
+                <tr key={index}>
+                  <td style={{ textAlign: 'left' }}>
+                    <input
+                      type="text"
+                      placeholder="Item description"
+                      className="line-description"
+                      value={item.description || ''}
+                      onChange={(e) => handleItemChange(index, 'description', e.target.value)}
+                      required
+                      style={{ textAlign: 'left', direction: 'ltr', width: '100%' }}
+                    />
+                  </td>
+                  <td style={{ textAlign: 'right' }}>
+                    <input
+                      type="number"
+                      placeholder="1"
+                      className="line-quantity"
+                      value={item.quantity || 1}
+                      min="1"
+                      onChange={(e) => handleItemChange(index, 'quantity', e.target.value)}
+                      required
+                      style={{ textAlign: 'right', direction: 'ltr', width: '100%' }}
+                    />
+                  </td>
+                  <td style={{ textAlign: 'right' }}>
+                    <input
+                      type="text"
+                      placeholder="0.00"
+                      className="line-price"
+                      value={formatNumber(item.price)}
+                      onChange={(e) => handleItemChange(index, 'price', e.target.value)}
+                      onFocus={(e) => {
+                        e.target.value = item.price || '';
+                      }}
+                      onBlur={(e) => {
+                        if (e.target.value) {
+                          const num = parseFloat(e.target.value);
+                          if (!isNaN(num)) {
+                            e.target.value = formatNumber(num);
+                          }
+                        }
+                      }}
+                      required
+                      style={{ 
+                        textAlign: 'right', 
+                        direction: 'ltr', 
+                        width: '100%',
+                        fontFamily: "'Courier New', monospace",
+                        fontWeight: '600'
+                      }}
+                    />
+                  </td>
+                  <td className="line-amount" style={{ 
+                    textAlign: 'right',
+                    fontFamily: "'Courier New', monospace",
+                    fontWeight: '700',
+                    color: '#375b6d'
+                  }}>
+                    {formatNumber(item.amount)}
+                  </td>
+                  <td>
+                    {formData.items.length > 1 && (
+                      <button 
+                        type="button" 
+                        className="remove-line"
+                        onClick={() => removeLineItem(index)}
+                        style={{
+                          background: '#ffebee',
+                          border: 'none',
+                          color: '#d32f2f',
+                          width: '30px',
+                          height: '30px',
+                          borderRadius: '50%',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}
+                      >
+                        <i className="fas fa-times"></i>
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
         <button type="button" className="btn btn-outline" onClick={addLineItem}>
           <i className="fas fa-plus"></i> Add Item
         </button>
       </div>
 
-      <div className="totals-section">
-        <div className="total-row">
-          <span>Subtotal:</span>
-          <span>AED {subtotal.toFixed(2)}</span>
+      <div className="totals-section" style={{ 
+        background: '#f8f9fa',
+        border: '1px solid #e9ecef',
+        borderRadius: '8px',
+        padding: '20px',
+        marginTop: '20px'
+      }}>
+        <div className="total-row" style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between',
+          marginBottom: '12px',
+          fontSize: '15px'
+        }}>
+          <span style={{ fontWeight: '600' }}>Subtotal:</span>
+          <span style={{ 
+            fontFamily: "'Courier New', monospace",
+            fontWeight: '600'
+          }}>
+            AED {formatNumber(subtotal)}
+          </span>
         </div>
-        <div className="total-row">
-          <span>VAT (5%):</span>
-          <span>AED {vat.toFixed(2)}</span>
+        <div className="total-row" style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between',
+          marginBottom: '12px',
+          fontSize: '15px'
+        }}>
+          <span style={{ fontWeight: '600' }}>VAT (5%):</span>
+          <span style={{ 
+            fontFamily: "'Courier New', monospace",
+            fontWeight: '600'
+          }}>
+            AED {formatNumber(vat)}
+          </span>
         </div>
-        <div className="total-row final">
+        <div className="total-row final" style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between',
+          paddingTop: '16px',
+          borderTop: '2px solid #e5e7eb',
+          fontSize: '18px',
+          fontWeight: '700'
+        }}>
           <span>Total:</span>
-          <span>AED {total.toFixed(2)}</span>
+          <span style={{ 
+            fontFamily: "'Courier New', monospace",
+            fontWeight: '700',
+            color: '#375b6d'
+          }}>
+            AED {formatNumber(total)}
+          </span>
         </div>
       </div>
     </>

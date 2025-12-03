@@ -40,6 +40,37 @@ const ViewEditExpenseInputModal = ({ expense, type, onClose, onSave }) => {
   const [currencies] = useState(['AED', 'USD', 'EUR', 'GBP', 'CAD']);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Helper function to format numbers with commas
+  const formatNumber = (value) => {
+    if (value === '' || value === null || value === undefined) return '';
+    const num = parseFloat(value);
+    if (isNaN(num)) return '';
+    return num.toLocaleString('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+  };
+
+  // Function to format date as DD/MM/YYYY
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    
+    // Check if already in DD/MM/YYYY format
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateString)) {
+      return dateString;
+    }
+    
+    // Try to parse various date formats
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return dateString || 'N/A';
+    
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    
+    return `${day}/${month}/${year}`;
+  };
+
   useEffect(() => {
     if (expense && !isCreate) {
       setFormData({
@@ -63,60 +94,108 @@ const ViewEditExpenseInputModal = ({ expense, type, onClose, onSave }) => {
   }, [formData.category, formData.paymentMethod, formData.amount, formData.vatAmount]);
 
   const handleInputChange = (field, value) => {
+  if (field === 'amount' || field === 'vatAmount') {
+    // Clean the input for amount fields
+    let cleanedValue = value;
+    
+    // Remove any non-numeric characters except decimal point
+    cleanedValue = cleanedValue.replace(/[^\d.]/g, '');
+    
+    // Ensure only one decimal point
+    const decimalCount = cleanedValue.split('.').length - 1;
+    if (decimalCount > 1) {
+      cleanedValue = cleanedValue.substring(0, cleanedValue.lastIndexOf('.'));
+    }
+    
+    // Limit to 2 decimal places
+    if (cleanedValue.includes('.')) {
+      const parts = cleanedValue.split('.');
+      if (parts[1].length > 2) {
+        cleanedValue = parts[0] + '.' + parts[1].substring(0, 2);
+      }
+    }
+    
+    setFormData(prev => ({
+      ...prev,
+      [field]: cleanedValue
+    }));
+    
+    // Recalculate VAT and totals when amount changes
+    if (field === 'amount' && cleanedValue) {
+      const amount = parseFloat(cleanedValue) || 0;
+      const vatAmount = amount * 0.05; // 5% VAT
+      const totalAmount = amount + vatAmount;
+      
+      setFormData(prev => ({
+        ...prev,
+        vatAmount: vatAmount.toFixed(2),
+        totalAmount: totalAmount.toFixed(2)
+      }));
+    }
+  } else if (field === 'date') {
+    // Store date as entered
     setFormData(prev => ({
       ...prev,
       [field]: value
     }));
-  };
-
-  const updateAccountingEntries = () => {
-    const amount = parseFloat(formData.amount) || 0;
-    const vatAmount = parseFloat(formData.vatAmount) || 0;
-    const totalAmount = amount + vatAmount;
-
-    // Get selected category and payment method
-    const selectedCategory = expenseCategories.find(cat => cat.id === formData.category);
-    const selectedPayment = paymentMethods.find(pay => pay.id === formData.paymentMethod);
-
-    if (!selectedCategory || !selectedPayment) return;
-
-    const entries = [];
-
-    // Entry for the expense category (Debit)
-    entries.push({
-      account: selectedCategory.accountCode,
-      accountName: selectedCategory.accountName,
-      debit: amount.toFixed(2),
-      credit: '',
-      description: `Record ${selectedCategory.name}`
-    });
-
-    // Entry for VAT (if applicable)
-    if (vatAmount > 0) {
-      entries.push({
-        account: '2010', // Output VAT Receivable account
-        accountName: 'Output VAT Receivable',
-        debit: vatAmount.toFixed(2),
-        credit: '',
-        description: 'Record VAT receivable'
-      });
-    }
-
-    // Entry for payment method (Credit)
-    entries.push({
-      account: selectedPayment.accountCode,
-      accountName: selectedPayment.accountName,
-      debit: '',
-      credit: totalAmount.toFixed(2),
-      description: `Record ${selectedPayment.name}`
-    });
-
+  } else {
     setFormData(prev => ({
       ...prev,
-      totalAmount: totalAmount.toFixed(2),
-      accountingEntries: entries
+      [field]: value
     }));
-  };
+  }
+};
+
+  const updateAccountingEntries = () => {
+  const amount = parseFloat(formData.amount) || 0;
+  // Calculate 5% VAT automatically
+  const vatAmount = amount * 0.05; // 5% VAT
+  const totalAmount = amount + vatAmount;
+
+  // Get selected category and payment method
+  const selectedCategory = expenseCategories.find(cat => cat.id === formData.category);
+  const selectedPayment = paymentMethods.find(pay => pay.id === formData.paymentMethod);
+
+  if (!selectedCategory || !selectedPayment) return;
+
+  const entries = [];
+
+  // Entry for the expense category (Debit)
+  entries.push({
+    account: selectedCategory.accountCode,
+    accountName: selectedCategory.accountName,
+    debit: formatNumber(amount),
+    credit: '',
+    description: `Record ${selectedCategory.name}`
+  });
+
+  // Entry for VAT (if applicable)
+  if (vatAmount > 0) {
+    entries.push({
+      account: '2010', // Output VAT Receivable account
+      accountName: 'Output VAT Receivable',
+      debit: formatNumber(vatAmount),
+      credit: '',
+      description: 'Record VAT receivable (5%)'
+    });
+  }
+
+  // Entry for payment method (Credit)
+  entries.push({
+    account: selectedPayment.accountCode,
+    accountName: selectedPayment.accountName,
+    debit: '',
+    credit: formatNumber(totalAmount),
+    description: `Record ${selectedPayment.name}`
+  });
+
+  setFormData(prev => ({
+    ...prev,
+    vatAmount: vatAmount.toFixed(2),
+    totalAmount: totalAmount.toFixed(2),
+    accountingEntries: entries
+  }));
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -154,8 +233,8 @@ const ViewEditExpenseInputModal = ({ expense, type, onClose, onSave }) => {
 
   const calculateTotals = () => {
     const entries = formData.accountingEntries || [];
-    const totalDebits = entries.reduce((sum, entry) => sum + parseFloat(entry.debit || 0), 0);
-    const totalCredits = entries.reduce((sum, entry) => sum + parseFloat(entry.credit || 0), 0);
+    const totalDebits = entries.reduce((sum, entry) => sum + parseFloat(entry.debit.replace(/,/g, '') || 0), 0);
+    const totalCredits = entries.reduce((sum, entry) => sum + parseFloat(entry.credit.replace(/,/g, '') || 0), 0);
     const difference = totalDebits - totalCredits;
     
     return {
@@ -174,7 +253,7 @@ const ViewEditExpenseInputModal = ({ expense, type, onClose, onSave }) => {
 
   return (
     <div className="modal-overlay active" onClick={onClose}>
-      <div className="modal-content expense-modal" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content expense-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '1000px' }}>
         <div className="modal-header">
           <div className="modal-title-section">
             <h2 className="modal-title">
@@ -190,72 +269,98 @@ const ViewEditExpenseInputModal = ({ expense, type, onClose, onSave }) => {
           </button>
         </div>
         
-        <div className="modal-body">
+        <div className="modal-body" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
           {isView ? (
             // View Mode
             <div className="expense-details-view">
-
-            <div className="modal-form-section">
-                <h4>Expanse Information</h4>
-              <div className="expense-detail-grid">
-                <div className="expense-detail-item">
-                  <label>Expense Number</label>
-                  <div className="expense-detail-value">
-                    <span className="expense-number-display">EXP-{safeExpense.expenseNumber || 'N/A'}</span>
+              <div className="modal-form-section">
+                <h4>Expense Information</h4>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Expense Number</label>
+                    <div className="detail-value" style={{ 
+                      textAlign: 'left', 
+                      direction: 'ltr',
+                      fontFamily: "'Courier New', monospace",
+                      fontWeight: '600',
+                      color: 'var(--blue-2)'
+                    }}>
+                      EXP-{safeExpense.expenseNumber || 'N/A'}
+                    </div>
                   </div>
-                </div>
-                <div className="expense-detail-item">
-                  <label>Date</label>
-                  <div className="expense-detail-value">
-                    {safeExpense.date ? new Date(safeExpense.date).toLocaleDateString('en-US', { 
-                      year: 'numeric', 
-                      month: 'long', 
-                      day: 'numeric' 
-                    }) : 'N/A'}
+                  <div className="form-group">
+                    <label>Date</label>
+                    <div className="detail-value" style={{ textAlign: 'left', direction: 'ltr' }}>
+                      {formatDate(safeExpense.date)}
+                    </div>
                   </div>
-                </div>
-                <div className="expense-detail-item">
-                  <label>Currency</label>
-                  <div className="expense-detail-value">
-                    <span className="expense-currency-display">{safeExpense.currency || 'AED'}</span>
-                  </div>
-                </div>
-                <div className="expense-detail-item">
-                  <label>Status</label>
-                  <div className="expense-detail-value">
-                    <span className={`expense-status-badge expense-status-${(safeExpense.status || 'draft').toLowerCase()}`}>
-                      {safeExpense.status || 'Draft'}
-                    </span>
+                  <div className="form-group">
+                    <label>Currency</label>
+                    <div className="detail-value" style={{ textAlign: 'left', direction: 'ltr' }}>
+                      <span style={{
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        color: 'white',
+                        padding: '4px 12px',
+                        borderRadius: '6px',
+                        fontWeight: '600',
+                        fontSize: '12px'
+                      }}>
+                        {safeExpense.currency || 'AED'}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
               <div className="modal-form-section">
                 <h4>Expense Details</h4>
-                <div className="expense-detail-grid">
-                  <div className="expense-detail-item">
+                <div className="form-row">
+                  <div className="form-group">
                     <label>Category</label>
-                    <div className="expense-detail-value">
+                    <div className="detail-value" style={{ textAlign: 'left', direction: 'ltr' }}>
                       {safeExpense.category ? expenseCategories.find(cat => cat.id === safeExpense.category)?.name : 'N/A'}
                     </div>
                   </div>
-                  <div className="expense-detail-item">
+                  <div className="form-group">
                     <label>Payment Method</label>
-                    <div className="expense-detail-value">
+                    <div className="detail-value" style={{ textAlign: 'left', direction: 'ltr' }}>
                       {safeExpense.paymentMethod ? paymentMethods.find(pay => pay.id === safeExpense.paymentMethod)?.name : 'N/A'}
                     </div>
                   </div>
-                  <div className="expense-detail-item">
+                </div>
+                <div className="form-row">
+                  <div className="form-group">
                     <label>Amount</label>
-                    <div className="expense-detail-value">
-                      {safeExpense.amount || '0.00'} {safeExpense.currency || 'AED'}
+                    <div className="detail-value" style={{ 
+                      textAlign: 'left', 
+                      direction: 'ltr',
+                      fontFamily: "'Courier New', monospace",
+                      fontWeight: '600'
+                    }}>
+                      {formatNumber(safeExpense.amount)} {safeExpense.currency || 'AED'}
                     </div>
                   </div>
-                  <div className="expense-detail-item">
+                  <div className="form-group">
                     <label>VAT Amount</label>
-                    <div className="expense-detail-value">
-                      {safeExpense.vatAmount || '0.00'} {safeExpense.currency || 'AED'}
+                    <div className="detail-value" style={{ 
+                      textAlign: 'left', 
+                      direction: 'ltr',
+                      fontFamily: "'Courier New', monospace",
+                      fontWeight: '600'
+                    }}>
+                      {formatNumber(safeExpense.vatAmount)} {safeExpense.currency || 'AED'}
+                    </div>
+                  </div>
+                  <div className="form-group">
+                    <label>Total Amount</label>
+                    <div className="detail-value total" style={{ 
+                      textAlign: 'left', 
+                      direction: 'ltr',
+                      fontFamily: "'Courier New', monospace",
+                      fontWeight: '700',
+                      color: '#059669'
+                    }}>
+                      {formatNumber(safeExpense.totalAmount)} {safeExpense.currency || 'AED'}
                     </div>
                   </div>
                 </div>
@@ -263,75 +368,81 @@ const ViewEditExpenseInputModal = ({ expense, type, onClose, onSave }) => {
 
               <div className="modal-form-section">
                 <h4>Vendor Information</h4>
-                <div className="expense-detail-grid">
-                  <div className="expense-detail-item">
+                <div className="form-row">
+                  <div className="form-group">
                     <label>Vendor Name</label>
-                    <div className="expense-detail-value expense-vendor-display">
+                    <div className="detail-value" style={{ textAlign: 'left', direction: 'ltr' }}>
                       {safeExpense.vendor || 'N/A'}
                     </div>
                   </div>
-                  <div className="expense-detail-item">
+                  <div className="form-group">
                     <label>Contact Email</label>
-                    <div className="expense-detail-value">{safeExpense.vendorContact || 'N/A'}</div>
+                    <div className="detail-value" style={{ textAlign: 'left', direction: 'ltr' }}>
+                      {safeExpense.vendorContact || 'N/A'}
+                    </div>
                   </div>
-                  <div className="expense-detail-item">
+                  <div className="form-group">
                     <label>Phone</label>
-                    <div className="expense-detail-value">{safeExpense.vendorPhone || 'N/A'}</div>
+                    <div className="detail-value" style={{ textAlign: 'left', direction: 'ltr' }}>
+                      {safeExpense.vendorPhone || 'N/A'}
+                    </div>
                   </div>
                 </div>
               </div>
 
-
-               <div className="modal-form-section">
+              <div className="modal-form-section">
                 <h4>Notes</h4>
-              {safeExpense.notes && (
-                <div className="expense-detail-section">
-                  <div className="expense-notes-content">
-                    {safeExpense.notes}
+                <div className="form-group full-width">
+                  <div className="detail-value notes-value" style={{ textAlign: 'left', direction: 'ltr' }}>
+                    {safeExpense.notes || 'No notes available'}
                   </div>
                 </div>
-              )}
               </div>
-            <div className="modal-form-section">
-                              <h4>Accounting Entry (Accrual Basis)</h4>
 
-              <div className="expense-detail-section">
-                <div className="expense-entries-table-container">
-                  <table className="expense-entries-table">
+              <div className="modal-form-section">
+                <h4>Accounting Entry (Accrual Basis)</h4>
+                <div style={{ overflowX: 'auto' }}>
+                  <table className="expense-entries-table" style={{ width: '100%' }}>
                     <thead>
                       <tr>
-                        <th>Account</th>
-                        <th>Description</th>
-                        <th className="text-right">Debit ({safeExpense.currency || 'AED'})</th>
-                        <th className="text-right">Credit ({safeExpense.currency || 'AED'})</th>
+                        <th style={{ textAlign: 'left' }}>Account</th>
+                        <th style={{ textAlign: 'left' }}>Description</th>
+                        <th style={{ textAlign: 'right' }}>Debit ({safeExpense.currency || 'AED'})</th>
+                        <th style={{ textAlign: 'right' }}>Credit ({safeExpense.currency || 'AED'})</th>
                       </tr>
                     </thead>
                     <tbody>
                       {safeAccountingEntries.length > 0 ? (
                         safeAccountingEntries.map((entry, index) => (
                           <tr key={index} className="expense-entry-row">
-                            <td>
+                            <td style={{ textAlign: 'left' }}>
                               <div className="expense-account-info">
                                 <div className="expense-account-name">
                                   {entry.account} - {entry.accountName}
                                 </div>
                               </div>
                             </td>
-                            <td>
+                            <td style={{ textAlign: 'left' }}>
                               <div className="expense-entry-description">
                                 {entry.description}
                               </div>
                             </td>
-                            <td className="text-right">
+                            <td style={{ textAlign: 'right' }}>
                               {entry.debit ? (
-                                <span className="expense-amount debit">{entry.debit}</span>
+                                <span className="expense-amount debit" style={{ 
+                                  fontFamily: "'Courier New', monospace",
+                                  fontWeight: '600'
+                                }}>{entry.debit}</span>
                               ) : (
                                 <span className="expense-amount zero">-</span>
                               )}
                             </td>
-                            <td className="text-right">
+                            <td style={{ textAlign: 'right' }}>
                               {entry.credit ? (
-                                <span className="expense-amount credit">{entry.credit}</span>
+                                <span className="expense-amount credit" style={{ 
+                                  fontFamily: "'Courier New', monospace",
+                                  fontWeight: '600'
+                                }}>{entry.credit}</span>
                               ) : (
                                 <span className="expense-amount zero">-</span>
                               )}
@@ -350,67 +461,122 @@ const ViewEditExpenseInputModal = ({ expense, type, onClose, onSave }) => {
                 </div>
               </div>
 
-              </div>
-
-
-<div className="modal-form-section">
-                              <h4>Total</h4>
-              <div className="expense-totals-section">
-                <div className="expense-total-row">
-                  <span>Total Debits:</span>
-                  <span className="expense-amount total-debit">{totals.totalDebits.toFixed(2)}</span>
+              <div className="modal-form-section">
+                <h4>Totals</h4>
+                <div className="totals-section" style={{ 
+                  background: '#f8f9fa',
+                  border: '1px solid #e9ecef',
+                  borderRadius: '8px',
+                  padding: '24px'
+                }}>
+                  <div className="total-row" style={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between',
+                    marginBottom: '12px',
+                    fontSize: '15px'
+                  }}>
+                    <span style={{ fontWeight: '600' }}>Total Debits:</span>
+                    <span style={{ 
+                      fontFamily: "'Courier New', monospace",
+                      fontWeight: '600'
+                    }}>
+                      {formatNumber(totals.totalDebits)}
+                    </span>
+                  </div>
+                  <div className="total-row" style={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between',
+                    marginBottom: '12px',
+                    fontSize: '15px'
+                  }}>
+                    <span style={{ fontWeight: '600' }}>Total Credits:</span>
+                    <span style={{ 
+                      fontFamily: "'Courier New', monospace",
+                      fontWeight: '600'
+                    }}>
+                      {formatNumber(totals.totalCredits)}
+                    </span>
+                  </div>
+                  <div className="total-row" style={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between',
+                    marginBottom: '12px',
+                    fontSize: '15px'
+                  }}>
+                    <span style={{ fontWeight: '600' }}>Difference:</span>
+                    <span style={{ 
+                      fontFamily: "'Courier New', monospace",
+                      fontWeight: '700',
+                      color: totals.difference === 0 ? '#2e7d32' : '#d32f2f'
+                    }}>
+                      {formatNumber(totals.difference)}
+                    </span>
+                  </div>
+                  <div className="total-row final" style={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between',
+                    paddingTop: '16px',
+                    borderTop: '2px solid #e5e7eb',
+                    fontSize: '16px',
+                    fontWeight: '700'
+                  }}>
+                    <span>Status:</span>
+                    <span style={{ 
+                      color: totals.isBalanced ? '#2e7d32' : '#d32f2f',
+                      padding: '6px 12px',
+                      borderRadius: '20px',
+                      background: totals.isBalanced ? '#e8f5e9' : '#ffebee',
+                      fontSize: '12px',
+                      fontWeight: '700',
+                      textTransform: 'uppercase',
+                      letterSpacing: '1px'
+                    }}>
+                      {totals.isBalanced ? '✓ BALANCED' : '✗ UNBALANCED'}
+                    </span>
+                  </div>
                 </div>
-                <div className="expense-total-row">
-                  <span>Total Credits:</span>
-                  <span className="expense-amount total-credit">{totals.totalCredits.toFixed(2)}</span>
-                </div>
-                <div className="expense-total-row expense-difference-row">
-                  <span>Difference:</span>
-                  <span className={`expense-amount difference ${totals.isBalanced ? 'balanced' : 'unbalanced'}`}>
-                    {totals.difference.toFixed(2)}
-                  </span>
-                </div>
-                <div className="expense-total-row expense-final-row">
-                  <span>Status:</span>
-                  <span className={`expense-balance-status ${totals.isBalanced ? 'balanced' : 'unbalanced'}`}>
-                    {totals.isBalanced ? '✓ BALANCED' : '✗ UNBALANCED'}
-                  </span>
-                </div>
-              </div>
               </div>
             </div>
           ) : (
             // Edit/Create Mode
             <form onSubmit={handleSubmit} className="expense-form">
-              <div className="expense-form-section">
+              <div className="modal-form-section">
                 <h4>Basic Information</h4>
-                <div className="expense-form-row">
-                  <div className="expense-form-group">
+                <div className="form-row">
+                  <div className="form-group">
                     <label>Date *</label>
                     <input
                       type="date"
-                      className="expense-form-control"
+                      className="form-control"
                       value={formData.date}
                       onChange={(e) => handleInputChange('date', e.target.value)}
                       required
+                      style={{ textAlign: 'left', direction: 'ltr' }}
                     />
                   </div>
-                  <div className="expense-form-group">
+                  <div className="form-group">
                     <label>Expense Number</label>
                     <input
                       type="text"
-                      className="expense-form-control"
+                      className="form-control"
                       value={`EXP-${formData.expenseNumber}`}
                       disabled
+                      style={{ 
+                        textAlign: 'left', 
+                        direction: 'ltr',
+                        fontFamily: "'Courier New', monospace",
+                        fontWeight: '600'
+                      }}
                     />
                   </div>
-                  <div className="expense-form-group">
+                  <div className="form-group">
                     <label>Currency *</label>
                     <select
-                      className="expense-form-control"
+                      className="form-control"
                       value={formData.currency}
                       onChange={(e) => handleInputChange('currency', e.target.value)}
                       required
+                      style={{ textAlign: 'left', direction: 'ltr' }}
                     >
                       {currencies.map(currency => (
                         <option key={currency} value={currency}>{currency}</option>
@@ -420,16 +586,17 @@ const ViewEditExpenseInputModal = ({ expense, type, onClose, onSave }) => {
                 </div>
               </div>
 
-              <div className="expense-form-section">
+              <div className="modal-form-section">
                 <h4>Expense Details</h4>
-                <div className="expense-form-row">
-                  <div className="expense-form-group">
+                <div className="form-row">
+                  <div className="form-group">
                     <label>Category *</label>
                     <select
-                      className="expense-form-control"
+                      className="form-control"
                       value={formData.category}
                       onChange={(e) => handleInputChange('category', e.target.value)}
                       required
+                      style={{ textAlign: 'left', direction: 'ltr' }}
                     >
                       <option value="">Select Category</option>
                       {expenseCategories.map(category => (
@@ -448,13 +615,14 @@ const ViewEditExpenseInputModal = ({ expense, type, onClose, onSave }) => {
                     )}
                   </div>
                   
-                  <div className="expense-form-group">
+                  <div className="form-group">
                     <label>Payment Method *</label>
                     <select
-                      className="expense-form-control"
+                      className="form-control"
                       value={formData.paymentMethod}
                       onChange={(e) => handleInputChange('paymentMethod', e.target.value)}
                       required
+                      style={{ textAlign: 'left', direction: 'ltr' }}
                     >
                       <option value="">Select Payment Method</option>
                       {paymentMethods.map(method => (
@@ -474,132 +642,216 @@ const ViewEditExpenseInputModal = ({ expense, type, onClose, onSave }) => {
                   </div>
                 </div>
 
-                <div className="expense-form-row">
-                  <div className="expense-form-group">
+                <div className="form-row">
+                  <div className="form-group">
                     <label>Amount ({formData.currency}) *</label>
-                    <input
-                      type="number"
-                      className="expense-form-control"
-                      step="0.01"
-                      min="0"
-                      value={formData.amount}
-                      onChange={(e) => handleInputChange('amount', e.target.value)}
-                      placeholder="0.00"
-                      required
-                    />
+                    <div style={{ position: 'relative' }}>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={formatNumber(formData.amount)}
+                        onChange={(e) => handleInputChange('amount', e.target.value)}
+                        onFocus={(e) => {
+                          e.target.value = formData.amount || '';
+                        }}
+                        onBlur={(e) => {
+                          if (e.target.value) {
+                            const num = parseFloat(e.target.value);
+                            if (!isNaN(num)) {
+                              e.target.value = formatNumber(num);
+                            }
+                          }
+                        }}
+                        placeholder="0.00"
+                        required
+                        style={{ 
+                          textAlign: 'left', 
+                          direction: 'ltr',
+                          fontFamily: "'Courier New', monospace", 
+                          fontWeight: '600',
+                          paddingRight: '40px'
+                        }}
+                      />
+                      <span style={{
+                        position: 'absolute',
+                        right: '12px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        color: '#6b7280',
+                        fontSize: '12px',
+                        pointerEvents: 'none'
+                      }}>
+                        {formData.currency}
+                      </span>
+                    </div>
                   </div>
                   
-                  <div className="expense-form-group">
-                    <label>VAT Amount ({formData.currency})</label>
-                    <input
-                      type="number"
-                      className="expense-form-control"
-                      step="0.01"
-                      min="0"
-                      value={formData.vatAmount}
-                      onChange={(e) => handleInputChange('vatAmount', e.target.value)}
-                      placeholder="0.00"
-                    />
-                  </div>
+                  <div className="form-group">
+  <label>VAT Amount ({formData.currency})</label>
+  <div style={{ position: 'relative' }}>
+    <input
+      type="text"
+      className="form-control"
+      value={formatNumber(formData.vatAmount) || formatNumber(0)}
+      disabled
+      style={{ 
+        textAlign: 'left', 
+        direction: 'ltr',
+        fontFamily: "'Courier New', monospace", 
+        fontWeight: '600',
+        paddingRight: '40px',
+        backgroundColor: '#f0f9ff',
+        borderColor: '#bae6fd'
+      }}
+    />
+    <span style={{
+      position: 'absolute',
+      right: '12px',
+      top: '50%',
+      transform: 'translateY(-50%)',
+      color: '#0284c7',
+      fontSize: '12px',
+      pointerEvents: 'none',
+      fontWeight: '600'
+    }}>
+      {formData.currency}
+    </span>
+  </div>
+  <div className="calculation-info" style={{
+    fontSize: '11px',
+    color: '#0284c7',
+    marginTop: '4px',
+    fontStyle: 'italic'
+  }}>
+    Calculated as 5% of amount
+  </div>
+</div>
                   
-                  <div className="expense-form-group">
-                    <label>Total Amount ({formData.currency})</label>
-                    <input
-                      type="text"
-                      className="expense-form-control"
-                      value={formData.totalAmount || '0.00'}
-                      disabled
-                    />
-                  </div>
+<div className="form-group">
+  <label>Total Amount ({formData.currency})</label>
+  <input
+    type="text"
+    className="form-control"
+    value={formatNumber(formData.totalAmount) || formatNumber(0)}
+    disabled
+    style={{ 
+      textAlign: 'left', 
+      direction: 'ltr',
+      fontFamily: "'Courier New', monospace",
+      fontWeight: '700',
+      color: '#059669',
+      backgroundColor: '#f0fdf4',
+      borderColor: '#86efac'
+    }}
+  />
+  <div className="calculation-info" style={{
+    fontSize: '11px',
+    color: '#059669',
+    marginTop: '4px',
+    fontStyle: 'italic'
+  }}>
+    Amount + 5% VAT
+  </div>
+</div>
                 </div>
               </div>
 
-              <div className="expense-form-section">
+              <div className="modal-form-section">
                 <h4>Vendor Details</h4>
-                <div className="expense-form-row">
-                  <div className="expense-form-group">
+                <div className="form-row">
+                  <div className="form-group">
                     <label>Vendor Name *</label>
                     <input
                       type="text"
-                      className="expense-form-control"
+                      className="form-control"
                       value={formData.vendor}
                       onChange={(e) => handleInputChange('vendor', e.target.value)}
                       placeholder="Enter vendor name"
                       required
+                      style={{ textAlign: 'left', direction: 'ltr' }}
                     />
                   </div>
-                  <div className="expense-form-group">
+                  <div className="form-group">
                     <label>Contact Email</label>
                     <input
                       type="email"
-                      className="expense-form-control"
+                      className="form-control"
                       value={formData.vendorContact}
                       onChange={(e) => handleInputChange('vendorContact', e.target.value)}
                       placeholder="vendor@company.com"
+                      style={{ textAlign: 'left', direction: 'ltr' }}
                     />
                   </div>
-                  <div className="expense-form-group">
+                  <div className="form-group">
                     <label>Phone</label>
                     <input
                       type="tel"
-                      className="expense-form-control"
+                      className="form-control"
                       value={formData.vendorPhone}
                       onChange={(e) => handleInputChange('vendorPhone', e.target.value)}
                       placeholder="+971 123-4567"
+                      style={{ textAlign: 'left', direction: 'ltr' }}
                     />
                   </div>
                 </div>
 
-                <div className="expense-form-group">
+                <div className="form-group">
                   <label>Notes</label>
                   <textarea
-                    className="expense-form-control"
+                    className="form-control"
                     rows="3"
                     value={formData.notes}
                     onChange={(e) => handleInputChange('notes', e.target.value)}
                     placeholder="Enter expense description or notes..."
+                    style={{ textAlign: 'left', direction: 'ltr' }}
                   />
                 </div>
               </div>
 
               {formData.accountingEntries && formData.accountingEntries.length > 0 && (
-                <div className="expense-form-section">
+                <div className="modal-form-section">
                   <h4>Accounting Entry (Accrual Basis)</h4>
-                  <div className="expense-entries-table-container">
-                    <table className="expense-entries-table">
+                  <div style={{ overflowX: 'auto' }}>
+                    <table className="expense-entries-table" style={{ width: '100%' }}>
                       <thead>
                         <tr>
-                          <th>Account</th>
-                          <th>Description</th>
-                          <th className="text-right">Debit ({formData.currency})</th>
-                          <th className="text-right">Credit ({formData.currency})</th>
+                          <th style={{ textAlign: 'left' }}>Account</th>
+                          <th style={{ textAlign: 'left' }}>Description</th>
+                          <th style={{ textAlign: 'right' }}>Debit ({formData.currency})</th>
+                          <th style={{ textAlign: 'right' }}>Credit ({formData.currency})</th>
                         </tr>
                       </thead>
                       <tbody>
                         {formData.accountingEntries.map((entry, index) => (
                           <tr key={index} className="expense-entry-row">
-                            <td>
+                            <td style={{ textAlign: 'left' }}>
                               <div className="expense-account-info">
                                 <div className="expense-account-name">
                                   {entry.account} - {entry.accountName}
                                 </div>
                               </div>
                             </td>
-                            <td>
+                            <td style={{ textAlign: 'left' }}>
                               <div className="expense-entry-description">
                                 {entry.description}
                               </div>
                             </td>
-                            <td className="text-right">
+                            <td style={{ textAlign: 'right' }}>
                               {entry.debit ? (
-                                <span className="expense-amount debit">{entry.debit}</span>
+                                <span className="expense-amount debit" style={{ 
+                                  fontFamily: "'Courier New', monospace",
+                                  fontWeight: '600'
+                                }}>{entry.debit}</span>
                               ) : (
                                 <span className="expense-amount zero">-</span>
                               )}
                             </td>
-                            <td className="text-right">
+                            <td style={{ textAlign: 'right' }}>
                               {entry.credit ? (
-                                <span className="expense-amount credit">{entry.credit}</span>
+                                <span className="expense-amount credit" style={{ 
+                                  fontFamily: "'Courier New', monospace",
+                                  fontWeight: '600'
+                                }}>{entry.credit}</span>
                               ) : (
                                 <span className="expense-amount zero">-</span>
                               )}
@@ -610,56 +862,111 @@ const ViewEditExpenseInputModal = ({ expense, type, onClose, onSave }) => {
                     </table>
                   </div>
 
-                  <div className="expense-totals-section">
-                    <div className="expense-total-row">
-                      <span>Total Debits:</span>
-                      <span className="expense-amount total-debit">{totals.totalDebits.toFixed(2)}</span>
-                    </div>
-                    <div className="expense-total-row">
-                      <span>Total Credits:</span>
-                      <span className="expense-amount total-credit">{totals.totalCredits.toFixed(2)}</span>
-                    </div>
-                    <div className="expense-total-row expense-difference-row">
-                      <span>Difference:</span>
-                      <span className={`expense-amount difference ${totals.isBalanced ? 'balanced' : 'unbalanced'}`}>
-                        {totals.difference.toFixed(2)}
+                  <div className="totals-section" style={{ 
+                    background: '#f8f9fa',
+                    border: '1px solid #e9ecef',
+                    borderRadius: '8px',
+                    padding: '24px',
+                    marginTop: '20px'
+                  }}>
+                    <div className="total-row" style={{ 
+                      display: 'flex', 
+                      justifyContent: 'space-between',
+                      marginBottom: '12px',
+                      fontSize: '15px'
+                    }}>
+                      <span style={{ fontWeight: '600' }}>Total Debits:</span>
+                      <span style={{ 
+                        fontFamily: "'Courier New', monospace",
+                        fontWeight: '600'
+                      }}>
+                        {formatNumber(totals.totalDebits)}
                       </span>
                     </div>
-                    <div className="expense-total-row expense-final-row">
+                    <div className="total-row" style={{ 
+                      display: 'flex', 
+                      justifyContent: 'space-between',
+                      marginBottom: '12px',
+                      fontSize: '15px'
+                    }}>
+                      <span style={{ fontWeight: '600' }}>Total Credits:</span>
+                      <span style={{ 
+                        fontFamily: "'Courier New', monospace",
+                        fontWeight: '600'
+                      }}>
+                        {formatNumber(totals.totalCredits)}
+                      </span>
+                    </div>
+                    <div className="total-row" style={{ 
+                      display: 'flex', 
+                      justifyContent: 'space-between',
+                      marginBottom: '12px',
+                      fontSize: '15px'
+                    }}>
+                      <span style={{ fontWeight: '600' }}>Difference:</span>
+                      <span style={{ 
+                        fontFamily: "'Courier New', monospace",
+                        fontWeight: '700',
+                        color: totals.difference === 0 ? '#2e7d32' : '#d32f2f'
+                      }}>
+                        {formatNumber(totals.difference)}
+                      </span>
+                    </div>
+                    <div className="total-row final" style={{ 
+                      display: 'flex', 
+                      justifyContent: 'space-between',
+                      paddingTop: '16px',
+                      borderTop: '2px solid #e5e7eb',
+                      fontSize: '16px',
+                      fontWeight: '700'
+                    }}>
                       <span>Status:</span>
-                      <span className={`expense-balance-status ${totals.isBalanced ? 'balanced' : 'unbalanced'}`}>
+                      <span style={{ 
+                        color: totals.isBalanced ? '#2e7d32' : '#d32f2f',
+                        padding: '6px 12px',
+                        borderRadius: '20px',
+                        background: totals.isBalanced ? '#e8f5e9' : '#ffebee',
+                        fontSize: '12px',
+                        fontWeight: '700',
+                        textTransform: 'uppercase',
+                        letterSpacing: '1px'
+                      }}>
                         {totals.isBalanced ? '✓ BALANCED' : '✗ UNBALANCED'}
                       </span>
                     </div>
                   </div>
                 </div>
               )}
-
-              <div className="expense-form-section">
-                <h4>Attachments</h4>
-                <div className="expense-file-upload-area">
-                  <input
-                    type="file"
-                    className="expense-file-input"
-                    multiple
-                    onChange={(e) => handleInputChange('attachments', Array.from(e.target.files))}
-                  />
-                  <div className="expense-upload-placeholder">
-                    <i className="fas fa-cloud-upload-alt"></i>
-                    <p>Drop files here or click to upload</p>
-                    <span>Supports PDF, JPG, PNG (Max 10MB each)</span>
-                  </div>
-                </div>
-              </div>
             </form>
           )}
         </div>
         
-        <div className="modal-footer">
+        <div className="modal-footer" style={{ 
+          display: 'flex', 
+          justifyContent: 'flex-end', 
+          gap: '16px', 
+          padding: '20px 28px',
+          background: '#f8fafc',
+          borderTop: '1px solid #e9ecef',
+          borderRadius: '0 0 16px 16px'
+        }}>
           <button 
             className="btn btn-outline" 
             onClick={onClose}
             disabled={isSubmitting}
+            style={{
+              background: 'transparent',
+              border: '2px solid #9ca3af',
+              color: '#6b7280',
+              padding: '12px 24px',
+              borderRadius: '8px',
+              fontWeight: '600',
+              fontSize: '14px',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              minWidth: '120px',
+              textAlign: 'center'
+            }}
           >
             {isView ? 'Close' : 'Cancel'}
           </button>
@@ -668,6 +975,19 @@ const ViewEditExpenseInputModal = ({ expense, type, onClose, onSave }) => {
               className="btn btn-primary with-icon" 
               onClick={handleSubmit}
               disabled={isSubmitting || !totals.isBalanced}
+              style={{
+                background: totals.isBalanced ? 'linear-gradient(135deg, var(--blue-2), var(--blue-1))' : '#9ca3af',
+                border: 'none',
+                color: 'white',
+                padding: '12px 28px',
+                borderRadius: '8px',
+                fontWeight: '600',
+                fontSize: '14px',
+                cursor: totals.isBalanced ? 'pointer' : 'not-allowed',
+                transition: 'all 0.3s ease',
+                minWidth: '160px',
+                textAlign: 'center'
+              }}
             >
               {isSubmitting ? (
                 <>

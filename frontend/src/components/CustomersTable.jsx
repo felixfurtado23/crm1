@@ -39,7 +39,10 @@ const CustomersTable = () => {
     { value: customers.length, label: 'Total Customers' },
     { value: customers.filter(c => c.status === 'Active' || c.totalInvoices > 0).length, label: 'Active' },
     { value: customers.reduce((sum, customer) => sum + (customer.totalInvoices || 0), 0), label: 'Total Invoices' },
-    { value: `AED ${customers.reduce((sum, customer) => sum + (customer.totalAmount || 0), 0).toFixed(2)}`, label: 'Total Revenue' }
+    { 
+  value: `AED ${customers.reduce((sum, customer) => sum + (customer.totalAmount || 0), 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 
+  label: 'Total Revenue' 
+}
   ];
 
   const handleExport = () => {

@@ -50,10 +50,10 @@ const InventoryRow = ({ item, onInventoryDelete, onInventoryUpdate }) => {
         </td>
         <td>{item.itemName}</td>
         <td>
-          <span className="cost-price">${item.costPrice}</span>
+          <span className="cost-price">AED {item.costPrice}</span>
         </td>
         <td>
-          <span className="selling-price">${item.sellingPrice}</span>
+          <span className="selling-price">AED {item.sellingPrice}</span>
         </td>
         <td>
           <span className="opening-quantity">{item.openingQuantity}</span>

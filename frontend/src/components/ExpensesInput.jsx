@@ -143,10 +143,16 @@ const ExpensesInput = () => {
     { value: expenses.length, label: 'Total Expenses' },
     { value: expenses.filter(e => e.status === 'Posted').length, label: 'Posted' },
     { value: expenses.filter(e => e.status === 'Draft').length, label: 'Draft' },
-    { value: `AED ${expenses.reduce((sum, expense) => {
-      const totals = calculateTotals(expense);
-      return sum + totals.totalDebits;
-    }, 0).toFixed(2)}`, label: 'Total Amount' }
+{ 
+  value: `AED ${expenses.reduce((sum, expense) => {
+    const totals = calculateTotals(expense);
+    return sum + totals.totalDebits;
+  }, 0).toLocaleString('en-US', { 
+    minimumFractionDigits: 2, 
+    maximumFractionDigits: 2 
+  })}`, 
+  label: 'Total Amount' 
+}
   ];
 
 

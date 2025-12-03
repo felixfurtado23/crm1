@@ -73,6 +73,11 @@ const convertLeadToCustomer = async () => {
     return `LD-${String(id).padStart(4, '0')}`;
   };
 
+  const capitalizeFirstLetter = (string) => {
+  if (!string) return '';
+  return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+};
+
   return (
     <>
       <tr>
@@ -88,7 +93,7 @@ const convertLeadToCustomer = async () => {
           <div className="contact-email">{lead.email}</div>
           <div className="contact-phone">{lead.phone}</div>
         </td>
-        <td>{lead.source}</td>
+        <td>{capitalizeFirstLetter(lead.source)}</td>
         <td>
           <span className={`status-badge ${getStatusClass(lead.status)}`}>
             {lead.status === 'proposal' ? 'Proposal Sent' : 

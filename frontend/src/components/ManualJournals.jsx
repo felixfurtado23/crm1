@@ -75,10 +75,16 @@ const ManualJournals = () => {
     { value: journals.length, label: 'Total Journals' },
     { value: journals.filter(j => j.status === 'Posted').length, label: 'Posted' },
     { value: journals.filter(j => j.status === 'Draft').length, label: 'Draft' },
-    { value: `AED ${journals.reduce((sum, journal) => {
-      const totals = calculateTotals(journal);
-      return sum + totals.totalDebits;
-    }, 0).toFixed(2)}`, label: 'Total Amount' }
+   { 
+  value: `AED ${journals.reduce((sum, journal) => {
+    const totals = calculateTotals(journal);
+    return sum + totals.totalDebits;
+  }, 0).toLocaleString('en-US', { 
+    minimumFractionDigits: 2, 
+    maximumFractionDigits: 2 
+  })}`, 
+  label: 'Total Amount' 
+}
   ];
 
   const getJournalStatusColor = (status) => {

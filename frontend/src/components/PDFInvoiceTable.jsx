@@ -176,13 +176,13 @@ const PDFInvoiceTable = () => {
             {new Date(invoice.dueDate).toLocaleDateString()}
           </td>
           <td className="expense-amount-cell">
-            <strong className="expense-debit-amount">AED {Number(invoice.amount).toLocaleString()}</strong>
+            <strong className="expense-debit-amount">{Number(invoice.amount).toLocaleString()}</strong>
           </td>
           <td className="expense-amount-cell">
-            <span className="expense-debit-amount">AED {Number(invoice.vatAmount).toLocaleString()}</span>
+            <span className="expense-debit-amount">{Number(invoice.vatAmount).toLocaleString()}</span>
           </td>
           <td className="expense-amount-cell">
-            <strong className="total-amount expense-debit-amount">AED {Number(invoice.totalAmount).toLocaleString()}</strong>
+            <strong className="total-amount expense-debit-amount">{Number(invoice.totalAmount).toLocaleString()}</strong>
           </td>
           <td>
             <div className="expense-status-cell">
