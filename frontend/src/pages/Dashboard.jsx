@@ -43,25 +43,7 @@ const Reports = () => {
   };
 
 
-  const handleTaxFilingDownload = (type) => {
-  const pdfFiles = {
-    'Corporate Tax': 'corporate-tax-filing.pdf',
-    'VAT': 'vat-filing.pdf'
-  };
-  
-  const fileName = pdfFiles[type];
-  
-  // For Vite, use root path from public folder
-  const link = document.createElement('a');
-  link.href = `/${fileName}`;  // Note: starts with / (root of public folder)
-  link.download = fileName;
-  
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  
-  console.log(`Downloading ${fileName}`);
-};
+
 
 
   const PieChart = ({ data, title }) => {

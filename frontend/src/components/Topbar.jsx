@@ -10,7 +10,6 @@ const Topbar = ({ activeMainNav, activeSubNav, activePage, setActiveSubNav, setA
           { label: 'Accounting', nav: 'accounting', icon: 'fas fa-calculator' },
           { label: 'Inventory', nav: 'inventory', icon: 'fas fa-boxes' },
           { label: 'Payroll WPS', nav: 'payroll', icon: 'fas fa-money-check' } 
-
         ];
       default:
         return [];
@@ -35,19 +34,14 @@ const Topbar = ({ activeMainNav, activeSubNav, activePage, setActiveSubNav, setA
           { label: 'Chart of Accounts', page: 'chart-of-accounts', icon: 'fas fa-sitemap' },
           { label: 'Manual Journals', page: 'manual-journals', icon: 'fas fa-book' }
         ];
-
-       case 'inventory': // Added Inventory level 3 items
+      case 'inventory':
         return [
           { label: 'Inventory Management', page: 'inventory', icon: 'fas fa-boxes' },
         ];
-
-
-        case 'payroll': // Added Inventory level 3 items
+      case 'payroll':
         return [
           { label: 'Payroll WPS Management', page: 'payroll', icon: 'fas fa-money-check' },
         ];
-
-       
       default:
         return [];
     }
@@ -68,14 +62,12 @@ const Topbar = ({ activeMainNav, activeSubNav, activePage, setActiveSubNav, setA
       case 'accounting':
         defaultPage = 'chart-of-accounts';
         break;
-
       case 'inventory':
         defaultPage = 'inventory';
         break;
-
       case 'payroll':
-  defaultPage = 'payroll';
-  break;
+        defaultPage = 'payroll';
+        break;
       default:
         defaultPage = '';
     }
@@ -92,41 +84,51 @@ const Topbar = ({ activeMainNav, activeSubNav, activePage, setActiveSubNav, setA
   const subNavItems = getSubNavItems();
   const level3Items = getLevel3Items();
 
-  // Don't show any navigation for Leads section
-  if (activeMainNav === 'leads') {
-    return (
-      <header className="topbar">
-        <div className="greeting">
-          <h1>CRM & Accounting Dashboard</h1>
-          <p>Manage your leads, customers, and finances in one place</p>
-        </div>
-        <div className="topbar-actions">
-          <div className="search-bar">
-            <i className="fas fa-search"></i>
-            <input type="text" placeholder="Search..." />
-          </div>
-          <div className="action-icons">
-            <div className="action-icon">
-              <i className="far fa-bell"></i>
-              <div className="notification-badge">3</div>
-            </div>
-            <div className="action-icon">
-              <i className="far fa-envelope"></i>
-              <div className="notification-badge">7</div>
-            </div>
-          </div>
-        </div>
-      </header>
-    );
-  }
+  // Determine the greeting text based on activeMainNav
+  const getGreetingText = () => {
+    switch (activeMainNav) {
+      case 'operations':
+        return {
+          title: 'Operations ',
+          subtitle: 'Manage customers, vendors, accounting, inventory, and payroll operations'
+        };
+      case 'leads':
+        return {
+          title: 'CRM & Leads ',
+          subtitle: 'Manage and track your leads and customer relationships'
+        };
+      case 'dashboard':
+        return {
+          title: 'CRM & Accounting Dashboard',
+          subtitle: 'Overview of your business performance and metrics'
+        };
+      case 'reports':
+        return {
+          title: 'Reports Dashboard',
+          subtitle: 'Generate and analyze business reports'
+        };
+      case 'ai-chatbot':
+        return {
+          title: 'AI Assistant',
+          subtitle: 'Get help with business operations and analytics'
+        };
+      default:
+        return {
+          title: 'CRM & Accounting Dashboard',
+          subtitle: 'Manage your leads, customers, and finances in one place'
+        };
+    }
+  };
+
+  const greeting = getGreetingText();
 
   return (
     <>
       {/* Original Topbar Header */}
       <header className="topbar">
         <div className="greeting">
-          <h1>CRM & Accounting Dashboard</h1>
-          <p>Manage your leads, customers, and finances in one place</p>
+          <h1>{greeting.title}</h1>
+          <p>{greeting.subtitle}</p>
         </div>
         <div className="topbar-actions">
           <div className="search-bar">
