@@ -2,12 +2,12 @@ import React from 'react';
 
 const Sidebar = ({ activeMainNav, setActiveMainNav, setActiveSubNav, setActivePage }) => {
   const mainNavItems = [
-    // { icon: 'fas fa-chart-pie', label: 'Business Dashboards', nav: 'dashboard' },
-    { icon: 'fas fa-chart-pie', label: 'Business Dashboards', nav: 'reports' },
+    { icon: 'fas fa-chart-pie', label: 'Business Dashboards', nav: 'dashboard' },
+    // { icon: 'fas fa-chart-pie', label: 'Business Dashboards', nav: 'reports' },
     { icon: 'fas fa-users', label: 'Sales Path', nav: 'leads' },
     { icon: 'fas fa-cogs', label: 'Operations', nav: 'operations' },
     { label: 'AI Assistant', nav: 'ai-chatbot', icon: 'fas fa-robot' },
-    // { icon: 'fas fa-chart-pie', label: 'Business Dashboards', nav: 'reports' },
+    { icon: 'fas fa-chart-bar', label: 'Reports', nav: 'reports' },
 
   ];
 
