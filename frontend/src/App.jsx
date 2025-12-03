@@ -18,7 +18,7 @@ import './styles.css';
 
 function App() {
   const [activeMainNav, setActiveMainNav] = useState(() => {
-    return localStorage.getItem('activeMainNav') || 'dashboard';
+    return localStorage.getItem('activeMainNav') || 'reports';
   });
 
   const [activeSubNav, setActiveSubNav] = useState(() => {
