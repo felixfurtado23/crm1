@@ -1,50 +1,47 @@
 import React, { useState, useEffect } from "react";
 import "./Dashboard.css";
+
 const Dashboard = () => {
-  const [dashboardData, setDashboardData] = useState({
+  const [loading, setLoading] = useState(false);
+
+  // Hardcoded dashboard data
+  const dashboardData = {
     metrics: {
-      totalLeads: 0,
-      activeCustomers: 0,
-      outstandingInvoices: 0,
-      cashReceivedMTD: 0,
-      salesMTD: 0,
-      totalReceivables: 0,
+      totalLeads: 156,
+      activeCustomers: 42,
+      outstandingInvoices: 1257500,
+      cashReceivedMTD: 857500,
+      salesMTD: 1450000,
+      totalReceivables: 980000,
     },
     trends: {
-      salesTrend: 0,
-      cashTrend: 0,
+      salesTrend: 12.5,
+      cashTrend: 8.3,
     },
-    recentLeads: [],
-    unpaidInvoices: [],
+    recentLeads: [
+      { id: 1, name: "Ahmed Al Mansoori", status: "new", source: "website" },
+      { id: 2, name: "Fatima Al Zaabi", status: "contacted", source: "referral" },
+      { id: 3, name: "Mohammed Al Shamsi", status: "proposal", source: "social" },
+      { id: 4, name: "Layla Al Qubaisi", status: "won", source: "event" },
+      { id: 5, name: "Omar Al Dhaheri", status: "contacted", source: "website" },
+      { id: 6, name: "Aisha Al Hameli", status: "new", source: "referral" },
+    ],
+    unpaidInvoices: [
+      { id: 1, number: "INV-2024-001", customer: "Alpha Trading LLC", total: 185000, status: "overdue" },
+      { id: 2, number: "INV-2024-002", customer: "Beta Constructions", total: 275000, status: "sent" },
+      { id: 3, number: "INV-2024-003", customer: "Gamma Solutions FZ", total: 42500, status: "sent" },
+      { id: 4, number: "INV-2024-004", customer: "Delta Retail Group", total: 125000, status: "overdue" },
+      { id: 5, number: "INV-2024-005", customer: "Epsilon Services", total: 67500, status: "sent" },
+    ],
     quickStats: {
-      conversionRate: 0,
-      avgInvoiceValue: 0,
-      paymentCycle: 0,
+      conversionRate: 24.8,
+      avgInvoiceValue: 125000,
+      paymentCycle: 45,
     },
     charts: {
-      salesTrendData: [0, 0, 0],
-      collectionTrendData: [0, 0, 0],
+      salesTrendData: [850000, 1120000, 1450000],
+      collectionTrendData: [625000, 735000, 857500],
     },
-  });
-
-  const [loading, setLoading] = useState(true);
-
-  const API_BASE_URL = "http://72.61.171.226:8000";
-
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
-
-  const fetchDashboardData = async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/dashboard/metrics/`);
-      const data = await response.json();
-      setDashboardData(data);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching dashboard data:", error);
-      setLoading(false);
-    }
   };
 
   // Status badge helpers
@@ -80,11 +77,20 @@ const Dashboard = () => {
     return statusMap[status] || status;
   };
 
+  const capitalizeWords = (string) => {
+    if (!string) return '';
+    return string
+      .toLowerCase()
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
   const formatTrend = (trend) => {
     if (trend > 0)
-      return { class: "up", text: `${Math.abs(trend)}% from last month` };
+      return { class: "up", text: `+${Math.abs(trend)}% from last month` };
     if (trend < 0)
-      return { class: "down", text: `${Math.abs(trend)}% from last month` };
+      return { class: "down", text: `-${Math.abs(trend)}% from last month` };
     return { class: "", text: "No change from last month" };
   };
 
@@ -122,10 +128,10 @@ const Dashboard = () => {
   const taxAmount = metrics.outstandingInvoices * 0.05;
   const receivableExVat = metrics.outstandingInvoices - taxAmount;
 
-  const progressPercentage =
-    metrics.outstandingInvoices > 0
-      ? (metrics.cashReceivedMTD / metrics.outstandingInvoices) * 100
-      : 0;
+  const progressPercentage = Math.min(
+    (metrics.cashReceivedMTD / metrics.outstandingInvoices) * 100,
+    100
+  );
 
   return (
     <div className="dashboard">
@@ -137,7 +143,7 @@ const Dashboard = () => {
               Total Leads
               <i className="fas fa-users text-muted"></i>
             </div>
-            <div className="value">{metrics.totalLeads}</div>
+            <div className="value">{metrics.totalLeads.toLocaleString()}</div>
             <div className="label">From CRM Module</div>
             <div className={`trend ${salesTrend.class}`}>
               <i
@@ -147,7 +153,11 @@ const Dashboard = () => {
               ></i>
               {salesTrend.text}
             </div>
-            <div className="chart"></div>
+            <div className="chart-sparkline">
+              <div className="sparkline-bar" style={{ height: "70%" }}></div>
+              <div className="sparkline-bar" style={{ height: "85%" }}></div>
+              <div className="sparkline-bar" style={{ height: "100%" }}></div>
+            </div>
           </div>
 
           <div className="card four-col-card kpi-card">
@@ -155,7 +165,7 @@ const Dashboard = () => {
               Active Customers
               <i className="fas fa-user-check text-muted"></i>
             </div>
-            <div className="value">{metrics.activeCustomers}</div>
+            <div className="value">{metrics.activeCustomers.toLocaleString()}</div>
             <div className="label">From CRM Module</div>
             <div className={`trend ${salesTrend.class}`}>
               <i
@@ -165,7 +175,11 @@ const Dashboard = () => {
               ></i>
               {salesTrend.text}
             </div>
-            <div className="chart"></div>
+            <div className="chart-sparkline">
+              <div className="sparkline-bar" style={{ height: "60%" }}></div>
+              <div className="sparkline-bar" style={{ height: "80%" }}></div>
+              <div className="sparkline-bar" style={{ height: "90%" }}></div>
+            </div>
           </div>
 
           <div className="card four-col-card kpi-card">
@@ -185,7 +199,11 @@ const Dashboard = () => {
               ></i>
               {cashTrend.text}
             </div>
-            <div className="chart"></div>
+            <div className="chart-sparkline">
+              <div className="sparkline-bar" style={{ height: "40%" }}></div>
+              <div className="sparkline-bar" style={{ height: "65%" }}></div>
+              <div className="sparkline-bar" style={{ height: "85%" }}></div>
+            </div>
           </div>
 
           <div className="card four-col-card kpi-card activity-card">
@@ -205,7 +223,11 @@ const Dashboard = () => {
               ></i>
               {cashTrend.text}
             </div>
-            <div className="chart"></div>
+            <div className="chart-sparkline white-bars">
+              <div className="sparkline-bar" style={{ height: "50%" }}></div>
+              <div className="sparkline-bar" style={{ height: "75%" }}></div>
+              <div className="sparkline-bar" style={{ height: "100%" }}></div>
+            </div>
           </div>
         </section>
 
@@ -216,32 +238,27 @@ const Dashboard = () => {
               Sales Trend (Last 3 Months)
               <i className="fas fa-chart-line text-muted"></i>
             </div>
-            <div
-              className="balance-chart"
-              style={{
-                height: "200px",
-                background:
-                  "linear-gradient(180deg, var(--green-1) 0%, var(--green-2) 100%)",
-                display: "flex",
-                alignItems: "flex-end",
-                justifyContent: "space-around",
-                padding: "20px",
-              }}
-            >
-              {charts.salesTrendData.map((amount, index) => (
-                <div
-                  key={index}
-                  style={{
-                    width: "30%",
-                    height: `${
-                      (amount / Math.max(...charts.salesTrendData)) * 100
-                    }%`,
-                    backgroundColor: "white",
-                    borderRadius: "4px 4px 0 0",
-                    minHeight: "20px",
-                  }}
-                ></div>
-              ))}
+            <div className="balance-chart">
+              <div className="chart-bars">
+                {charts.salesTrendData.map((amount, index) => (
+                  <div key={index} className="chart-bar-container">
+                    <div className="chart-bar-label">
+                      {index === 0 ? "3 Months Ago" : index === 1 ? "Last Month" : "This Month"}
+                    </div>
+                    <div
+                      className="chart-bar"
+                      style={{
+                        height: `${
+                          (amount / Math.max(...charts.salesTrendData)) * 100
+                        }%`,
+                      }}
+                    ></div>
+                    <div className="chart-bar-value">
+                      AED {amount.toLocaleString()}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
             <div className="balance-values">
               <div className="balance-value">
@@ -264,41 +281,33 @@ const Dashboard = () => {
               Collection Trend (Last 3 Months)
               <i className="fas fa-chart-bar text-muted"></i>
             </div>
-            <div
-              className="balance-chart"
-              style={{
-                height: "200px",
-                background:
-                  "linear-gradient(180deg, var(--blue) 0%, #3a56c5 100%)",
-                display: "flex",
-                alignItems: "flex-end",
-                justifyContent: "space-around",
-                padding: "20px",
-              }}
-            >
-              {charts.collectionTrendData.map((amount, index) => (
-                <div
-                  key={index}
-                  style={{
-                    width: "30%",
-                    height: `${
-                      (amount /
-                        Math.max(
-                          ...charts.collectionTrendData.filter((val) => val > 0)
-                        ) || 1) * 100
-                    }%`,
-                    backgroundColor: "white",
-                    borderRadius: "4px 4px 0 0",
-                    minHeight: "20px",
-                  }}
-                ></div>
-              ))}
+            <div className="balance-chart">
+              <div className="chart-bars">
+                {charts.collectionTrendData.map((amount, index) => (
+                  <div key={index} className="chart-bar-container">
+                    <div className="chart-bar-label">
+                      {index === 0 ? "3 Months Ago" : index === 1 ? "Last Month" : "This Month"}
+                    </div>
+                    <div
+                      className="chart-bar"
+                      style={{
+                        height: `${
+                          (amount / Math.max(...charts.collectionTrendData)) * 100
+                        }%`,
+                      }}
+                    ></div>
+                    <div className="chart-bar-value">
+                      AED {amount.toLocaleString()}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
             <div className="balance-values">
               <div className="balance-value">
                 <div className="label">Current Month</div>
                 <div className="amount">
-                  AED{charts.collectionTrendData[2]?.toLocaleString() || "0"}
+                  AED {charts.collectionTrendData[2]?.toLocaleString() || "0"}
                 </div>
               </div>
               <div className="balance-value">
@@ -315,36 +324,33 @@ const Dashboard = () => {
               Quick Stats
               <i className="fas fa-tachometer-alt text-muted"></i>
             </div>
-            <div style={{ padding: "16px" }}>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  marginBottom: "12px",
-                }}
-              >
-                <span>Conversion Rate</span>
-                <strong>{quickStats.conversionRate}%</strong>
+            <div className="quick-stats-grid">
+              <div className="quick-stat-item">
+                <div className="quick-stat-icon">
+                  <i className="fas fa-percentage"></i>
+                </div>
+                <div className="quick-stat-content">
+                  <div className="quick-stat-label">Conversion Rate</div>
+                  <div className="quick-stat-value">{quickStats.conversionRate}%</div>
+                </div>
               </div>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  marginBottom: "12px",
-                }}
-              >
-                <span>Avg. Invoice Value</span>
-                <strong>AED {quickStats.avgInvoiceValue}</strong>
+              <div className="quick-stat-item">
+                <div className="quick-stat-icon">
+                  <i className="fas fa-file-invoice-dollar"></i>
+                </div>
+                <div className="quick-stat-content">
+                  <div className="quick-stat-label">Avg. Invoice Value</div>
+                  <div className="quick-stat-value">AED {quickStats.avgInvoiceValue.toLocaleString()}</div>
+                </div>
               </div>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  marginBottom: "12px",
-                }}
-              >
-                <span>Payment Cycle</span>
-                <strong>{quickStats.paymentCycle} days</strong>
+              <div className="quick-stat-item">
+                <div className="quick-stat-icon">
+                  <i className="fas fa-calendar-alt"></i>
+                </div>
+                <div className="quick-stat-content">
+                  <div className="quick-stat-label">Payment Cycle</div>
+                  <div className="quick-stat-value">{quickStats.paymentCycle} days</div>
+                </div>
               </div>
             </div>
           </div>
@@ -382,7 +388,7 @@ const Dashboard = () => {
                             {formatLeadStatus(lead.status)}
                           </span>
                         </td>
-                        <td>{lead.source}</td>
+                        <td>{capitalizeWords(lead.source)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -442,22 +448,22 @@ const Dashboard = () => {
             </div>
             <div className="quick-actions-container">
               <div className="quick-actions-buttons">
-                <button className="btn btn-secondary" onClick={handleAddLead}>
+                <button className="btn btn-action btn-lead" onClick={handleAddLead}>
                   <i className="fas fa-plus"></i> Add New Lead
                 </button>
                 <button
-                  className="btn btn-secondary"
+                  className="btn btn-action btn-invoice"
                   onClick={handleCreateInvoice}
                 >
                   <i className="fas fa-plus"></i> Create Invoice
                 </button>
                 <button
-                  className="btn btn-secondary"
+                  className="btn btn-action btn-payment"
                   onClick={handleRecordPayment}
                 >
                   <i className="fas fa-money-bill-wave"></i> Record Payment
                 </button>
-                <button className="btn" onClick={handleGenerateReport}>
+                <button className="btn btn-action btn-report" onClick={handleGenerateReport}>
                   <i className="fas fa-chart-bar"></i> Generate Report
                 </button>
               </div>
@@ -481,11 +487,8 @@ const Dashboard = () => {
               </div>
               <div className="balance-value">
                 <div className="label">Total Receivables (ex-VAT)</div>
-                <div className="amount" style={{ textAlign: "right" }}>
-                  AED 
-                  {receivableExVat.toLocaleString(undefined, {
-                    maximumFractionDigits: 2,
-                  })}
+                <div className="amount">
+                  AED {Math.round(receivableExVat).toLocaleString()}
                 </div>
               </div>
             </div>
@@ -499,21 +502,22 @@ const Dashboard = () => {
               <div className="balance-value">
                 <div className="label">VAT Amount (5%)</div>
                 <div className="amount">
-                  AED 
-                   {taxAmount.toLocaleString(undefined, {
-                    maximumFractionDigits: 2,
-                  })}
+                  AED {Math.round(taxAmount).toLocaleString()}
                 </div>
               </div>
             </div>
-            <div
-              className="balance-chart"
-              style={{
-                height: "80px",
-                marginTop: "16px",
-                background: `linear-gradient(90deg, var(--green-2) 0%, var(--green-2) ${progressPercentage}%, var(--muted-green) ${progressPercentage}%, var(--muted-green) 100%)`,
-              }}
-            ></div>
+            <div className="progress-container">
+              <div className="progress-label">
+                <span>Collection Progress</span>
+                <span>{Math.round(progressPercentage)}%</span>
+              </div>
+              <div className="progress-bar">
+                <div 
+                  className="progress-fill" 
+                  style={{ width: `${progressPercentage}%` }}
+                ></div>
+              </div>
+            </div>
           </div>
         </section>
       </main>
