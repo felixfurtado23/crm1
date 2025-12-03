@@ -8,10 +8,7 @@ const ViewPDFInvoiceModal = ({ invoice, type, onClose, onMarkAsPaid }) => {
     if (value === '' || value === null || value === undefined) return '0.00';
     const num = parseFloat(value);
     if (isNaN(num)) return '0.00';
-    return num.toLocaleString('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    });
+    return num.toLocaleString();
   };
 
   // Function to format date as DD/MM/YYYY

@@ -76,14 +76,11 @@ const ManualJournals = () => {
     { value: journals.filter(j => j.status === 'Posted').length, label: 'Posted' },
     { value: journals.filter(j => j.status === 'Draft').length, label: 'Draft' },
    { 
-  value: `AED ${journals.reduce((sum, journal) => {
-    const totals = calculateTotals(journal);
-    return sum + totals.totalDebits;
-  }, 0).toLocaleString('en-US', { 
-    minimumFractionDigits: 2, 
-    maximumFractionDigits: 2 
-  })}`, 
-  label: 'Total Amount' 
+ value: `AED ${Math.round(journals.reduce((sum, expense) => {
+  const totals = calculateTotals(expense);
+  return sum + totals.totalDebits;
+}, 0)).toLocaleString('en-US')}`, 
+label: 'Total Amount'
 }
   ];
 

@@ -56,7 +56,7 @@ const LeadsTable = () => {
           <p className="page-subtitle">Manage customer relationships and track business interactions</p>
         </div>
         <button className="page-header-btn" onClick={() => setShowAddModal(true)}>
-          <i className="fas fa-plus"></i> Add Customer
+          <i className="fas fa-plus"></i> Add New Lead
         </button>
       </div>
       <div className="data-table-container">

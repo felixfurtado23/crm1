@@ -6,10 +6,7 @@ const ViewEmployeeModal = ({ employee, onClose }) => {
     if (value === '' || value === null || value === undefined) return '0.00';
     const num = parseFloat(value);
     if (isNaN(num)) return '0.00';
-    return num.toLocaleString('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    });
+    return num.toLocaleString();
   };
 
   // Helper function to format integers with commas

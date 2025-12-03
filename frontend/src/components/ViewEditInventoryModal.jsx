@@ -9,10 +9,7 @@ const ViewEditInventoryModal = ({ item, type, onClose, onUpdate }) => {
     if (value === '' || value === null || value === undefined) return '';
     const num = parseFloat(value);
     if (isNaN(num)) return '';
-    return num.toLocaleString('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    });
+    return num.toLocaleString();
   };
 
   // Helper function to format integers with commas (no decimals)

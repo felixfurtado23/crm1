@@ -4374,16 +4374,13 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.5px;
   border: 1px solid transparent;
-  background: #fef2f2;
-  color: #dc2626;
-  border-color: #fecaca;
 }
 
 /* Selling Price Badge */
 .selling-price {
   padding: 6px 12px;
   border-radius: 20px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   display: inline-block;
   text-align: center;
@@ -4391,16 +4388,14 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.5px;
   border: 1px solid transparent;
-  background: #f0fdf4;
-  color: #059669;
-  border-color: #86efac;
+
 }
 
 /* Opening Quantity Badge */
 .opening-quantity {
   padding: 6px 12px;
   border-radius: 20px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   display: inline-block;
   text-align: center;
@@ -4408,16 +4403,13 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.5px;
   border: 1px solid transparent;
-  background: #eff6ff;
-  color: #2563eb;
-  border-color: #93c5fd;
 }
 
 /* Minimum Quantity Badge */
 .minimum-quantity {
   padding: 6px 12px;
   border-radius: 20px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   display: inline-block;
   text-align: center;

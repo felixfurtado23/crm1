@@ -12,8 +12,8 @@ const InventoryManagementTable = () => {
       costPrice: 25,
       sellingPrice: 35,
       openingQuantity: 40,
-      minimumQuantity: 50,
-      currentQuantity: 30
+      minimumQuantity: 25,
+      currentQuantity: 35
     },
     {
       id: 2,
@@ -33,7 +33,7 @@ const InventoryManagementTable = () => {
       sellingPrice: 12,
       openingQuantity: 5,
       minimumQuantity: 15,
-      currentQuantity: 10
+      currentQuantity: 15
     }
   ]);
 
