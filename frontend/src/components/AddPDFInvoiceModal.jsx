@@ -819,17 +819,17 @@ const AddPDFInvoiceModal = ({ onClose, onSave }) => {
           <button 
             type="button" 
             className="btn"
-            style={{
-              background: 'linear-gradient(135deg, var(--green-2), var(--green-1))',
+             style={{
+              background: selectedFile ? 'linear-gradient(135deg, var(--blue-2), var(--blue-1))' : '#9ca3af',
               border: 'none',
               color: 'white',
               padding: '12px 28px',
               borderRadius: '8px',
               fontWeight: '600',
               fontSize: '14px',
-              cursor: 'pointer',
+              cursor: selectedFile ? 'pointer' : 'not-allowed',
               transition: 'all 0.3s ease',
-              minWidth: '140px',
+              minWidth: '160px',
               display: 'flex',
               alignItems: 'center',
               gap: '8px'
