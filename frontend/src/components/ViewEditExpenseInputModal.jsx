@@ -967,6 +967,38 @@ const ViewEditExpenseInputModal = ({ expense, type, onClose, onSave }) => {
           >
             {isView ? 'Close' : 'Cancel'}
           </button>
+
+
+          <button 
+              className="btn btn-primary with-icon" 
+              onClick={handleSubmit}
+              disabled={isSubmitting || !totals.isBalanced}
+              style={{
+                background: totals.isBalanced ? 'linear-gradient(135deg, var(--blue-2), var(--blue-1))' : '#9ca3af',
+                border: 'none',
+                color: 'white',
+                padding: '12px 28px',
+                borderRadius: '8px',
+                fontWeight: '600',
+                fontSize: '14px',
+                cursor: totals.isBalanced ? 'pointer' : 'not-allowed',
+                transition: 'all 0.3s ease',
+                minWidth: '160px',
+                textAlign: 'center'
+              }}
+            >
+              {isSubmitting ? (
+                <>
+                  <i className="fas fa-spinner fa-spin"></i>
+                  {isCreate ? 'Creating...' : 'Updating...'}
+                </>
+              ) : (
+                <>
+                  <i className="fas fa-save"></i>
+                  {isCreate ? 'Save Vendor' : 'Save Vendor'}
+                </>
+              )}
+            </button>
           {!isView && (
             <button 
               className="btn btn-primary with-icon" 

@@ -1091,40 +1091,7 @@ const ViewEditJournalModal = ({ journal, type, onClose, onSave }) => {
               Cancel
             </button>
 
-            <button
-              type="button"
-              className="btn"
-              style={{
-                background:
-                  "linear-gradient(135deg, var(--blue-2), var(--blue-1))",
-                border: "none",
-                color: "white",
-                padding: "12px 28px",
-                borderRadius: "8px",
-                fontWeight: "600",
-                fontSize: "14px",
-                cursor: "pointer",
-                transition: "all 0.3s ease",
-                minWidth: "140px",
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.background =
-                  "linear-gradient(135deg, #059669, #047857)";
-                e.target.style.transform = "translateY(-2px)";
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.background =
-                  "linear-gradient(135deg, var(--green-2), var(--green-1))";
-                e.target.style.transform = "translateY(0)";
-              }}
-              onClick={() => {
-                // Add your save vendor logic here
-                alert("Save Vendor functionality would go here");
-              }}
-            >
-              <i className="fas fa-save"></i>
-              Save Vendor
-            </button>
+       
 
             {type !== "view" && (
               <button
